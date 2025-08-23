@@ -1,3 +1,33 @@
+# Incultura — Gamifikasi Budaya Indonesia
+
+This project is a Next.js app (App Router + some /src/pages APIs) implementing a simple gamification flow: users read articles, participate in quizzes, earn coins, and redeem merchandise.
+
+Quick setup (local):
+
+1. Install deps
+
+```powershell
+npm install
+```
+
+2. Set up database (MySQL) and update `.env` `DATABASE_URL`.
+
+3. Run Prisma migrate & seed:
+
+```powershell
+npx prisma db push
+node prisma/seed.js
+```
+
+4. Run dev server:
+
+```powershell
+npm run dev
+```
+
+Notes:
+- Authentication via NextAuth (credentials + Google). For demo pages many calls use `userId=1` as a placeholder. Integrate session user ID where needed.
+- TailwindCSS is used for styling. shadcn/ui integration not fully implemented but the layout uses Tailwind classes and cultural color scheme.
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
