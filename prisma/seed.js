@@ -6,11 +6,10 @@ const prisma = new PrismaClient()
 async function main() {
   const pw = await bcrypt.hash('password', 10)
   const user = await prisma.user.upsert({ where: { email: 'demo@incultura.test' }, update: {}, create: { name: 'Demo User', email: 'demo@incultura.test', password: pw, coins: 0 } })
+  const admin = await prisma.user.upsert({ where: { email: 'admin@incultura.test' }, update: {}, create: { name: 'Admin', email: 'admin@incultura.test', password: pw, coins: 0, isAdmin: true } })
 
-  await prisma.article.createMany({ data: [
-    { title: 'Batik dari Jawa', content: '<p>Sejarah batik...</p>', region: 'Jawa' },
-    { title: 'Tari Tor-Tor', content: '<p>Tari tradisional...</p>', region: 'Sumatera Utara' }
-  ] })
+  await prisma.article.create({ data: { title: 'Batik dari Jawa', content: '<p>Sejarah batik...</p>', region: 'Jawa', status: 'APPROVED', authorId: admin.id } })
+  await prisma.article.create({ data: { title: 'Tari Tor-Tor', content: '<p>Tari tradisional...</p>', region: 'Sumatera Utara', status: 'PENDING', authorId: user.id } })
 
   await prisma.quiz.createMany({ data: [
     { question: 'Apa motif batik tradisional?', options: JSON.stringify(['Parang','Polka','Chevron']), correctAnswer: 'Parang' }

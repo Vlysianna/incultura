@@ -1,4 +1,5 @@
-import prisma from '../../../../../lib/prisma'
+import prisma from '../../../../lib/prisma'
+import getServerUser from '../../../../lib/getServerUser'
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -9,7 +10,10 @@ export default async function handler(req, res) {
     return res.json({ id: q.id, question: q.question, options: JSON.parse(q.options) })
   }
   if (req.method === 'POST') {
-    const { quizId, answer, userId } = req.body
+  const user = await getServerUser(req)
+  if (!user) return res.status(401).json({ error: 'Authentication required' })
+  const userId = user.id
+  const { quizId, answer } = req.body
     const q = await prisma.quiz.findUnique({ where: { id: quizId } })
     if (!q) return res.status(404).json({ error: 'quiz not found' })
     const correct = q.correctAnswer === answer

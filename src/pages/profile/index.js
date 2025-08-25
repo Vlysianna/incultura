@@ -1,9 +1,11 @@
 import Nav from '../components/Nav'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function Profile() {
   const [u, setU] = useState(null)
-  useEffect(()=>{ fetch('/api/profile?userId=1').then(r=>r.json()).then(setU) }, [])
+  const { data: session } = useSession()
+  useEffect(()=>{ if (session?.user?.id) fetch(`/api/profile?userId=${session.user.id}`).then(r=>r.json()).then(setU) }, [session])
   if (!u) return <div><Nav /><main className="p-8">Loading...</main></div>
   return (
     <div>

@@ -1,31 +1,30 @@
-import Nav from '../components/Nav'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import Layout from '../../components/Layout'
+import MarketplaceCard from '../../components/MarketplaceCard'
+import { apiGet } from '../../services/api'
 
-export default function Marketplace() {
+export default function MarketplacePage() {
   const [items, setItems] = useState([])
-  useEffect(()=>{ fetch('/api/marketplace').then(r=>r.json()).then(setItems) }, [])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const buy = async (id)=>{
-    const res = await fetch('/api/marketplace', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ userId: 1, itemId: id }) })
-    const j = await res.json()
-    alert(j.error || 'Berhasil ditukar')
-  }
+  useEffect(() => {
+    apiGet('/api/marketplace')
+      .then(setItems)
+      .catch(setError)
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
-    <div>
-      <Nav />
-      <main className="p-8">
-        <h2 className="text-2xl font-bold mb-4">Marketplace</h2>
-        <ul className="grid gap-4">
-          {items.map(it=> (
-            <li key={it.id} className="p-4 border rounded">
-              <h3 className="font-semibold">{it.name} — {it.cost} koin</h3>
-              <p className="text-sm">{it.description}</p>
-              <button className="mt-2 bg-red-600 text-white px-3 py-1" onClick={()=>buy(it.id)}>Tukar</button>
-            </li>
-          ))}
-        </ul>
-      </main>
-    </div>
+    <Layout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Marketplace</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-600">Error: {String(error)}</p>}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {items && items.map((it) => <MarketplaceCard key={it.id} item={it} />)}
+        </div>
+      </div>
+    </Layout>
   )
 }

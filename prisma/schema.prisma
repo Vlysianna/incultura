@@ -14,8 +14,10 @@ model User {
   password  String?
   image     String?
   coins     Int      @default(0)
+  isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
   activities Activity[]
+  articles  Article[]
 }
 
 model Article {
@@ -25,6 +27,15 @@ model Article {
   image     String?
   region    String
   createdAt DateTime @default(now())
+  status    ArticleStatus @default(PENDING)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+enum ArticleStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Quiz {

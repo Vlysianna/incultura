@@ -1,0 +1,296 @@
+{
+  "info": {
+    "name": "Incultura API",
+    "_postman_id": "incultura-collection-001",
+    "description": "Postman collection to test Incultura backend endpoints. Use 'Get CSRF Token' then 'Sign In (Credentials)' to authenticate (Postman will store cookies). Note: several endpoints (view, quiz submit, purchase) no longer accept a client-sent userId — the server derives the user from the session. Admin endpoints require signing in as an admin user.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "demoUserId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "demoEmail",
+      "value": "demo@incultura.test",
+      "type": "string"
+    },
+    {
+      "key": "demoPassword",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@incultura.test",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "password",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get CSRF Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/csrf",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","csrf"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "if (body?.csrfToken) pm.collectionVariables.set('csrfToken', body.csrfToken);",
+              "else console.warn('No csrfToken present in response')"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sign In (Credentials)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "csrfToken", "value": "{{csrfToken}}", "type": "text" },
+            { "key": "email", "value": "{{demoEmail}}", "type": "text" },
+            { "key": "password", "value": "{{demoPassword}}", "type": "text" },
+            { "key": "json", "value": "true", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/callback/credentials",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","callback","credentials"]
+        }
+      }
+    },
+    {
+      "name": "Sign Out",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "csrfToken", "value": "{{csrfToken}}", "type": "text" },
+            { "key": "json", "value": "true", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/signout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","signout"]
+        }
+      }
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","register"]
+        }
+      }
+    },
+    {
+      "name": "List Articles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/articles",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","articles"]
+        }
+      }
+    },
+    {
+      "name": "Create Article",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Contoh Artikel\",\n  \"content\": \"<p>Isi artikel budaya...</p>\",\n  \"image\": \"/images/batik.jpg\",\n  \"region\": \"Jawa\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/articles",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","articles"]
+        }
+      }
+    },
+    {
+      "name": "View Article (award +10 coins)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"articleId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/articles/view",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","articles","view"]
+        }
+      }
+    },
+    {
+      "name": "Get Coins & Activities",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/coins?userId={{demoUserId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","coins"],
+          "query": [ { "key": "userId", "value": "{{demoUserId}}" } ]
+        }
+      }
+    },
+    {
+      "name": "Get Random Quiz",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/quiz",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","quiz"]
+        }
+      }
+    },
+    {
+      "name": "Submit Quiz Answer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quizId\": 1,\n  \"answer\": \"Parang\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/quiz",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","quiz"]
+        }
+      }
+    },
+    {
+      "name": "List Marketplace Items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/marketplace",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","marketplace"]
+        }
+      }
+    },
+    {
+      "name": "Purchase Merchandise",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"itemId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/marketplace",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","marketplace"]
+        }
+      }
+    },
+
+    {
+      "name": "List Pending Articles (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/articles",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","articles"]
+        }
+      },
+      "description": "Returns only APPROVED articles for non-admins. To view pending articles, sign in as an admin first (Postman will keep cookies)."
+    },
+    {
+      "name": "Approve Article (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"articleId\": 2,\n  \"action\": \"APPROVED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/articles/approve",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","articles","approve"]
+        }
+      }
+    },
+    {
+      "name": "Leaderboard (top users)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/leaderboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","leaderboard"]
+        }
+      }
+    },
+    {
+      "name": "Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profile?userId={{demoUserId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","profile"],
+          "query": [ { "key": "userId", "value": "{{demoUserId}}" } ]
+        }
+      }
+    }
+  ]
+}

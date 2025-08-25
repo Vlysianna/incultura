@@ -1,11 +1,11 @@
 import Nav from './components/Nav'
 
-export default function Home() {
+export default function LegacyHome() {
   return (
     <div>
       <Nav />
-      <header className="p-8 text-center bg-gradient-to-r from-yellow-400 via-red-500 to-amber-800 text-white">
-        <h1 className="text-3xl font-bold">Baca Budaya, Kumpulkan Koin, Tukar Hadiah!</h1>
+      <header className="p-8 text-center batik-pattern" style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.15), rgba(178,34,34,0.15))' }}>
+        <h1 className="text-3xl font-bold" style={{ color: '#5a2b1b' }}>Baca Budaya, Kumpulkan Koin, Tukar Hadiah! (legacy)</h1>
         <p className="mt-4">Platform gamifikasi budaya Indonesia — baca artikel, ikut kuis, kumpulkan koin, tukar merchandise.</p>
       </header>
       <main className="p-8">

@@ -1,16 +1,19 @@
 import Nav from '../components/Nav'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function QuizPage() {
   const [q, setQ] = useState(null)
   const [selected, setSelected] = useState(null)
   const [message, setMessage] = useState('')
 
+  const { data: session } = useSession()
   const load = ()=> fetch('/api/quiz').then(r=>r.json()).then(setQ)
   useEffect(()=>{ load() }, [])
 
   const submit = async ()=>{
-    const userId = 1
+    const userId = session?.user?.id
+    if (!userId) return setMessage('Please sign in to participate')
     const res = await fetch('/api/quiz', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ quizId: q.id, answer: selected, userId }) })
     const j = await res.json()
     setMessage(j.correct ? 'Benar! +20 koin' : 'Salah')
