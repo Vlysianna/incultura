@@ -87,9 +87,21 @@ export default function ArticleDetail() {
         ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20'
         : 'bg-transparent'
         }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between">
-          <a href="/" className="text-xl font-bold text-[#a92d23]">Incultura</a>
-        </div>
+        {/* Logo Section */}
+                  <Link href="/" className="flex items-center gap-3 group">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                        <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
+                    </div>
+                    <div>
+                      <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
+                        <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
+                      </h1>
+                      <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
+                    </div>
+                  </Link>
       </header>
       <main className="pt-28 pb-12 px-6 max-w-4xl mx-auto">
         <div className="text-center py-16">
@@ -117,21 +129,21 @@ export default function ArticleDetail() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
 
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse"></div>
+            {/* Logo Section */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
               </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                  Incultura
-                </h1>
-                <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-              </div>
-            </Link>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
+                <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
+              </h1>
+              <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
+            </div>
+          </Link>
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-6">

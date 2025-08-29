@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -36,7 +36,7 @@ export default function Articles() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-amber-50 to-white">
       {/* Navbar */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
@@ -107,7 +107,7 @@ export default function Articles() {
       </header>
 
       {/* Main Content */}
-      <main className="pt-28 pb-12 px-6 max-w-4xl mx-auto">
+      <main className="flex-1 pt-28 pb-12 px-6 max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] bg-clip-text text-transparent">
           Artikel Budaya Indonesia
         </h2>
@@ -206,9 +206,12 @@ export default function Articles() {
         )}
       </main>
 
-      <footer className="bg-[#a92d23] text-white py-6 mt-16">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          &copy; {new Date().getFullYear()} Incultura. Semua Hak Dilindungi.
+      {/* Footer sticky di bawah */}
+      <footer className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-4 mt-auto">
+        <div className="text-center">
+          <p className="text-[#f3d099]">
+            © {new Date().getFullYear()} Incultura. Hak Cipta Dilindungi.
+          </p>
         </div>
       </footer>
     </div>
