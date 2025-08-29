@@ -1,6 +1,6 @@
 export default function TransitionSection() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden ">
       {/* Gradient transition from hero to features */}
       <div className="h-20 md:h-32 lg:h-40 bg-gradient-to-b from-white via-[#f3d099]/30 via-[#f3d099]/60 to-[#f3d099]"></div>
       

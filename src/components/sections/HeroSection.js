@@ -101,7 +101,7 @@ export default function HeroSection() {
             </div>
 
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4 pt-4 pb-10">
               <Link 
                 href="/register" 
                 className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-[#a92d23] to-[#f3d099] hover:from-[#f3d099] hover:to-[#a92d23] text-white px-8 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 font-bold text-lg overflow-hidden"
