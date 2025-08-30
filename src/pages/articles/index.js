@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import Nav from '../components/Nav'
 
 export default function Articles() {
   const { data: session } = useSession()
@@ -38,73 +39,7 @@ export default function Articles() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-amber-50 to-white">
       {/* Navbar */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse"></div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                  Incultura
-                </h1>
-                <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {[
-                { href: "/", label: "Home" },
-                { href: "/articles", label: "Artikel", active: true },
-                { href: "/quiz", label: "Kuis" },
-                { href: "/marketplace", label: "Marketplace" },
-                { href: "/leaderboard", label: "Leaderboard" },                
-              ].map((item) => (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className={`text-sm font-medium transition-colors relative group ${
-                    item.active 
-                      ? 'text-[#a92d23] font-semibold' 
-                      : 'text-[#a92d23] hover:text-[#7a1f1a]'
-                  }`}
-                >
-                  {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#a92d23] to-[#f3d099] transition-all duration-300 ${
-                    item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/register" 
-                className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
-              >
-                Daftar
-              </Link>
-              <button 
-                className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
-              >
-                Masuk
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
       {/* Main Content */}
       <main className="flex-1 pt-28 pb-12 px-6 max-w-4xl mx-auto">
@@ -114,24 +49,24 @@ export default function Articles() {
         
         {session && (
           <form onSubmit={submit} className="mb-12 bg-white p-6 rounded-xl shadow border border-[#f3d099]">
-            <h3 className="font-semibold text-lg mb-4">Tambah Artikel Baru</h3>
+            <h3 className="font-semibold text-lg mb-4 text-[#a92d23]">Tambah Artikel Baru</h3>
             <input 
               value={title}
               onChange={e=>setTitle(e.target.value)}
               placeholder="Judul Artikel"
-              className="w-full p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
+              className="w-full text-[#a92d23] p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
             />
             <textarea 
               value={content}
               onChange={e=>setContent(e.target.value)}
               placeholder="Isi Artikel"
-              className="w-full p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23] min-h-[120px]"
+              className="w-full text-[#a92d23] p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23] min-h-[120px]"
             />
             <input 
               value={region}
               onChange={e=>setRegion(e.target.value)}
               placeholder="Wilayah / Daerah"
-              className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
+              className="w-full text-[#a92d23] p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
             />
             <button 
               type="submit"
