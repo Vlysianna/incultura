@@ -72,7 +72,7 @@ export default function Articles() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-amber-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white relative overflow-hidden">
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-[#f3d099]/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-1/4 h-64 bg-gradient-to-tr from-[#a92d23]/10 to-transparent rounded-tr-[80px] pointer-events-none"></div>
@@ -115,13 +115,13 @@ export default function Articles() {
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-12">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#a92d23] w-5 h-5" />
             <input
               type="text"
               placeholder="Cari artikel atau daerah..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent bg-white/80 backdrop-blur-sm"
+              className="w-full pl-10 pr-4 py-3 text-[#a92d23] border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent bg-white/80 backdrop-blur-sm"
             />
           </div>
 
