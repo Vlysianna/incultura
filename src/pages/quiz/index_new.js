@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Brain, Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Sparkles, User } from 'lucide-react'
 
 export default function QuizPage() {
   const { data: session } = useSession()
-  const [quiz, setQuiz] = useState(null)
+  const [q, setQ] = useState(null)
   const [selected, setSelected] = useState(null)
   const [message, setMessage] = useState('')
   const [score, setScore] = useState(0)
@@ -21,35 +21,26 @@ export default function QuizPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const loadQuiz = () => {
+  const load = () => {
     setLoading(true)
     fetch('/api/quiz')
       .then(r => r.json())
       .then(data => {
-        setQuiz(data)
+        setQ(data)
         setSelected(null)
         setAnswered(false)
         setMessage('')
       })
-      .catch(error => {
-        console.error('Error loading quiz:', error)
-        setMessage('Gagal memuat pertanyaan. Silakan coba lagi.')
-      })
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { 
-    loadQuiz() 
-  }, [])
+  useEffect(() => { load() }, [])
 
-  const submitAnswer = async () => {
+  const submit = async () => {
     if (!selected || answered) return
     
     const userId = session?.user?.id
-    if (!userId) {
-      setMessage('Silakan login terlebih dahulu untuk berpartisipasi')
-      return
-    }
+    if (!userId) return setMessage('Silakan login terlebih dahulu untuk berpartisipasi')
     
     setLoading(true)
     setAnswered(true)
@@ -57,12 +48,9 @@ export default function QuizPage() {
     try {
       const res = await fetch('/api/quiz', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quizId: quiz.id, answer: selected, userId })
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ quizId: q.id, answer: selected, userId })
       })
-      
-      if (!res.ok) throw new Error('Failed to submit answer')
-      
       const result = await res.json()
       
       if (result.correct) {
@@ -74,10 +62,9 @@ export default function QuizPage() {
       
       setTimeout(() => {
         setMessage('')
-        loadQuiz()
+        load()
       }, 3000)
     } catch (error) {
-      console.error('Error submitting answer:', error)
       setMessage('Terjadi kesalahan. Silakan coba lagi.')
       setAnswered(false)
     } finally {
@@ -260,151 +247,143 @@ export default function QuizPage() {
         </div>
 
         {/* Quiz Section */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <motion.div 
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/50 text-center"
-            >
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a92d23] mx-auto mb-4"></div>
-              <p className="text-gray-600">Memuat pertanyaan...</p>
-            </motion.div>
-          ) : quiz ? (
-            <motion.div 
-              key={quiz.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.6 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden"
-            >
-              <div className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] p-6">
-                <div className="flex items-center justify-between text-white">
-                  <div className="flex items-center gap-3">
-                    <Brain className="w-6 h-6" />
-                    <h3 className="text-xl font-bold">Pertanyaan Budaya</h3>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="w-4 h-4" />
-                    <span>Tidak ada batas waktu</span>
-                  </div>
+        {loading ? (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/50 text-center"
+          >
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a92d23] mx-auto mb-4"></div>
+            <p className="text-gray-600">Memuat pertanyaan...</p>
+          </motion.div>
+        ) : q ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden"
+          >
+            <div className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] p-6">
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center gap-3">
+                  <Brain className="w-6 h-6" />
+                  <h3 className="text-xl font-bold">Pertanyaan Budaya</h3>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="w-4 h-4" />
+                  <span>Tidak ada batas waktu</span>
                 </div>
               </div>
+            </div>
 
-              <div className="p-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
-                  {quiz.question}
-                </h2>
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
+                {q.question}
+              </h2>
 
-                <div className="space-y-4 mb-8">
-                  {quiz.options.map((option, index) => (
-                    <motion.button
-                      key={option}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      onClick={() => !answered && setSelected(option)}
-                      disabled={answered}
-                      className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-300 ${
+              <div className="space-y-4 mb-8">
+                {q.options.map((option, index) => (
+                  <motion.button
+                    key={option}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    onClick={() => !answered && setSelected(option)}
+                    disabled={answered}
+                    className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-300 ${
+                      selected === option
+                        ? answered
+                          ? q.correctAnswer === option
+                            ? 'border-green-500 bg-green-50 text-green-800'
+                            : 'border-red-500 bg-red-50 text-red-800'
+                          : 'border-[#a92d23] bg-[#a92d23]/10 text-[#a92d23]'
+                        : answered && q.correctAnswer === option
+                        ? 'border-green-500 bg-green-50 text-green-800'
+                        : 'border-gray-200 bg-gray-50 hover:border-[#a92d23] hover:bg-[#a92d23]/5 text-gray-700'
+                    } ${answered ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-[1.02]'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold ${
                         selected === option
                           ? answered
-                            ? quiz.correctAnswer === option
-                              ? 'border-green-500 bg-green-50 text-green-800'
-                              : 'border-red-500 bg-red-50 text-red-800'
-                            : 'border-[#a92d23] bg-[#a92d23]/10 text-[#a92d23]'
-                          : answered && quiz.correctAnswer === option
-                          ? 'border-green-500 bg-green-50 text-green-800'
-                          : 'border-gray-200 bg-gray-50 hover:border-[#a92d23] hover:bg-[#a92d23]/5 text-gray-700'
-                      } ${answered ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-[1.02]'}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold ${
-                          selected === option
-                            ? answered
-                              ? quiz.correctAnswer === option
-                                ? 'border-green-500 bg-green-500 text-white'
-                                : 'border-red-500 bg-red-500 text-white'
-                              : 'border-[#a92d23] bg-[#a92d23] text-white'
-                            : answered && quiz.correctAnswer === option
-                            ? 'border-green-500 bg-green-500 text-white'
-                            : 'border-gray-300'
-                        }`}>
-                          {String.fromCharCode(65 + index)}
-                        </div>
-                        <span className="flex-1">{option}</span>
-                        {answered && selected === option && (
-                          quiz.correctAnswer === option ? 
-                          <CheckCircle className="w-6 h-6 text-green-500" /> : 
-                          <XCircle className="w-6 h-6 text-red-500" />
-                        )}
-                        {answered && quiz.correctAnswer === option && selected !== option && (
-                          <CheckCircle className="w-6 h-6 text-green-500" />
-                        )}
+                            ? q.correctAnswer === option
+                              ? 'border-green-500 bg-green-500 text-white'
+                              : 'border-red-500 bg-red-500 text-white'
+                            : 'border-[#a92d23] bg-[#a92d23] text-white'
+                          : answered && q.correctAnswer === option
+                          ? 'border-green-500 bg-green-500 text-white'
+                          : 'border-gray-300'
+                      }`}>
+                        {String.fromCharCode(65 + index)}
                       </div>
-                    </motion.button>
-                  ))}
-                </div>
-
-                {message && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-4 rounded-xl mb-6 text-center font-medium ${
-                      message.includes('Benar') 
-                        ? 'bg-green-100 text-green-800 border border-green-200' 
-                        : 'bg-red-100 text-red-800 border border-red-200'
-                    }`}
-                  >
-                    {message}
-                  </motion.div>
-                )}
-
-                <div className="flex gap-4">
-                  <button
-                    onClick={submitAnswer}
-                    disabled={!selected || answered || loading}
-                    className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all duration-300 ${
-                      !selected || answered || loading
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:scale-105 shadow-lg hover:shadow-xl'
-                    }`}
-                  >
-                    {loading ? 'Memproses...' : answered ? 'Sudah Dijawab' : 'Jawab'}
-                  </button>
-
-                  <button
-                    onClick={loadQuiz}
-                    disabled={loading}
-                    className="px-6 py-4 border-2 border-[#a92d23] text-[#a92d23] rounded-xl hover:bg-[#a92d23] hover:text-white transition-all duration-300 hover:scale-105"
-                  >
-                    <RotateCcw className="w-5 h-5" />
-                  </button>
-                </div>
+                      <span className="flex-1">{option}</span>
+                      {answered && selected === option && (
+                        q.correctAnswer === option ? 
+                        <CheckCircle className="w-6 h-6 text-green-500" /> : 
+                        <XCircle className="w-6 h-6 text-red-500" />
+                      )}
+                      {answered && q.correctAnswer === option && selected !== option && (
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
               </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="no-quiz"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-16"
+
+              {message && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`p-4 rounded-xl mb-6 text-center font-medium ${
+                    message.includes('Benar') 
+                      ? 'bg-green-100 text-green-800 border border-green-200' 
+                      : 'bg-red-100 text-red-800 border border-red-200'
+                  }`}
+                >
+                  {message}
+                </motion.div>
+              )}
+
+              <div className="flex gap-4">
+                <button
+                  onClick={submit}
+                  disabled={!selected || answered || loading}
+                  className={`flex-1 py-4 px-6 rounded-xl font-medium transition-all duration-300 ${
+                    !selected || answered || loading
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:scale-105 shadow-lg hover:shadow-xl'
+                  }`}
+                >
+                  {loading ? 'Memproses...' : answered ? 'Sudah Dijawab' : 'Jawab'}
+                </button>
+
+                <button
+                  onClick={load}
+                  disabled={loading}
+                  className="px-6 py-4 border-2 border-[#a92d23] text-[#a92d23] rounded-xl hover:bg-[#a92d23] hover:text-white transition-all duration-300 hover:scale-105"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <Brain className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-gray-600 mb-4">Tidak ada pertanyaan tersedia</h3>
+            <p className="text-gray-500 mb-8">Silakan coba lagi nanti atau hubungi administrator.</p>
+            <button
+              onClick={load}
+              className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
             >
-              <Brain className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-600 mb-4">Tidak ada pertanyaan tersedia</h3>
-              <p className="text-gray-500 mb-8">Silakan coba lagi nanti atau hubungi administrator.</p>
-              <button
-                onClick={loadQuiz}
-                className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
-              >
-                Muat Ulang
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Muat Ulang
+            </button>
+          </motion.div>
+        )}
 
         {/* Login prompt for non-authenticated users */}
         {!session && (
