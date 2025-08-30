@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import Nav from '../components/Nav'
 
 export default function Articles() {
   const { data: session } = useSession()
@@ -11,6 +12,8 @@ export default function Articles() {
   const [content, setContent] = useState('')
   const [region, setRegion] = useState('')
   const [scrolled, setScrolled] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showForm, setShowForm] = useState(false)
   
   useEffect(() => { 
     fetch('/api/articles').then(r => r.json()).then(setList) 
@@ -32,79 +35,19 @@ export default function Articles() {
     })
     await res.json()
     setTitle(''); setContent(''); setRegion('')
-    fetch('/api/articles').then(r => r.json()).then(setList)
+    setShowForm(false)
+    fetch('/api/articles').then(r=>r.json()).then(setList)
   }
+
+  const filteredArticles = list.filter(article => 
+    article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.region?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-amber-50 to-white">
       {/* Navbar */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse"></div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                  Incultura
-                </h1>
-                <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {[
-                { href: "/", label: "Home" },
-                { href: "/articles", label: "Artikel", active: true },
-                { href: "/quiz", label: "Kuis" },
-                { href: "/marketplace", label: "Marketplace" },
-                { href: "/leaderboard", label: "Leaderboard" },                
-              ].map((item) => (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className={`text-sm font-medium transition-colors relative group ${
-                    item.active 
-                      ? 'text-[#a92d23] font-semibold' 
-                      : 'text-[#a92d23] hover:text-[#7a1f1a]'
-                  }`}
-                >
-                  {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#a92d23] to-[#f3d099] transition-all duration-300 ${
-                    item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/register" 
-                className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
-              >
-                Daftar
-              </Link>
-              <button 
-                className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
-              >
-                Masuk
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
       {/* Main Content */}
       <main className="flex-1 pt-28 pb-12 px-6 max-w-4xl mx-auto">
@@ -114,24 +57,24 @@ export default function Articles() {
         
         {session && (
           <form onSubmit={submit} className="mb-12 bg-white p-6 rounded-xl shadow border border-[#f3d099]">
-            <h3 className="font-semibold text-lg mb-4">Tambah Artikel Baru</h3>
+            <h3 className="font-semibold text-lg mb-4 text-[#a92d23]">Tambah Artikel Baru</h3>
             <input 
               value={title}
               onChange={e=>setTitle(e.target.value)}
               placeholder="Judul Artikel"
-              className="w-full p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
+              className="w-full text-[#a92d23] p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
             />
             <textarea 
               value={content}
               onChange={e=>setContent(e.target.value)}
               placeholder="Isi Artikel"
-              className="w-full p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23] min-h-[120px]"
+              className="w-full text-[#a92d23] p-3 mb-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23] min-h-[120px]"
             />
             <input 
               value={region}
               onChange={e=>setRegion(e.target.value)}
               placeholder="Wilayah / Daerah"
-              className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
+              className="w-full text-[#a92d23] p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a92d23]"
             />
             <button 
               type="submit"
@@ -201,8 +144,201 @@ export default function Articles() {
           })}
         </div>
 
-        {list.length === 0 && (
-          <p className="text-center text-gray-500 mt-10">Belum ada artikel.</p>
+        {/* Controls Section */}
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-12">
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Cari artikel atau daerah..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent bg-white/80 backdrop-blur-sm"
+            />
+          </div>
+
+          {/* Add Article Button */}
+          {session && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-6 py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Tulis Artikel
+            </button>
+          )}
+        </div>
+
+        {/* Add Article Form Modal */}
+        {showForm && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowForm(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-[#a92d23]">Tulis Artikel Baru</h3>
+                <button 
+                  onClick={() => setShowForm(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={submit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Judul Artikel</label>
+                  <input 
+                    value={title}
+                    onChange={e=>setTitle(e.target.value)}
+                    placeholder="Masukkan judul artikel yang menarik..."
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Daerah/Wilayah</label>
+                  <input 
+                    value={region}
+                    onChange={e=>setRegion(e.target.value)}
+                    placeholder="Contoh: Jawa Barat, Bali, Sumatera Utara..."
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Isi Artikel</label>
+                  <textarea 
+                    value={content}
+                    onChange={e=>setContent(e.target.value)}
+                    placeholder="Ceritakan tentang budaya yang ingin Anda bagikan..."
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent min-h-[200px] resize-vertical"
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="flex-1 py-3 px-6 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                  >
+                    Batal
+                  </button>
+                  <button 
+                    type="submit"
+                    className="flex-1 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-3 px-6 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                  >
+                    Publikasikan
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Articles Grid */}
+        <div className="grid gap-8 md:gap-10">
+          {filteredArticles.map((article, idx) => (
+            <motion.article 
+              key={article.id}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              viewport={{ once: true }}
+              className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-white/50"
+            >
+              <div className="p-8">
+                <div className="flex flex-col md:flex-row gap-6">
+                  
+                  {/* Content */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#f3d099] to-[#a92d23] text-white px-4 py-2 rounded-full text-sm font-medium">
+                        <MapPin className="w-4 h-4" />
+                        {article.region}
+                      </span>
+                      <span className="text-sm text-gray-500 flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(article.createdAt).toLocaleDateString('id-ID', { 
+                          day: 'numeric', month: 'long', year: 'numeric' 
+                        })}
+                      </span>
+                    </div>
+
+                    <h2 className="text-2xl md:text-3xl font-bold text-[#a92d23] mb-4 group-hover:text-[#7a1f1a] transition-colors">
+                      {article.title}
+                    </h2>
+
+                    <p className="text-gray-600 text-lg leading-relaxed mb-6 line-clamp-3">
+                      {article.content.replace(/<[^>]+>/g, '').substring(0, 200)}...
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <Link 
+                        href={`/articles/${article.id}`} 
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-6 py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                      >
+                        <Eye className="w-5 h-5" />
+                        Baca Selengkapnya
+                      </Link>
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <User className="w-4 h-4" />
+                        <span>{article.author?.name || 'Admin'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Decorative Element */}
+                  <div className="hidden md:block w-32">
+                    <div className="w-full h-full bg-gradient-to-br from-[#f3d099]/20 to-[#a92d23]/20 rounded-xl flex items-center justify-center">
+                      <FileText className="w-16 h-16 text-[#a92d23]/60" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredArticles.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16"
+          >
+            <FileText className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-gray-600 mb-4">
+              {searchTerm ? 'Artikel tidak ditemukan' : 'Belum ada artikel'}
+            </h3>
+            <p className="text-gray-500 mb-8">
+              {searchTerm 
+                ? 'Coba ubah kata kunci pencarian Anda' 
+                : 'Jadilah yang pertama untuk berbagi cerita budaya!'
+              }
+            </p>
+            {session && !searchTerm && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+              >
+                Tulis Artikel Pertama
+              </button>
+            )}
+          </motion.div>
         )}
       </main>
 

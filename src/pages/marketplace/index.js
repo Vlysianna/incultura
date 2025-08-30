@@ -83,6 +83,12 @@ function InnovativeCard({ item, index }) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
 
+  const filteredItems = items.filter(item => 
+    item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.category?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
