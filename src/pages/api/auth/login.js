@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import LoginPage from '@/components/ui/LoginModal';
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [animationPhase, setAnimationPhase] = useState('initial');
   const [showFloatingElements, setShowFloatingElements] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -24,19 +24,19 @@ const RegisterPage = () => {
       const showFloatingTimer = setTimeout(() => {
         setShowFloatingElements(true);
       }, 2000);
-
+      
       const zoomOutTimer = setTimeout(() => {
         setAnimationPhase("zooming-out");
         setShowFloatingElements(false);
-
+        
         const resetTimer = setTimeout(() => {
           setAnimationPhase("initial");
           setIsZoomed(false);
         }, 4000);
-
+        
         return () => clearTimeout(resetTimer);
       }, 10000);
-
+      
       return () => {
         clearTimeout(showFloatingTimer);
         clearTimeout(zoomOutTimer);
@@ -50,71 +50,70 @@ const RegisterPage = () => {
         setAnimationPhase("zoomed");
         setIsZoomed(true);
       }, 2000);
-
+      
       return () => clearTimeout(restartTimer);
     }
   }, [animationPhase, isZoomed]);
 
   const floatingElements = [
-    {
-      id: 1,
-      image: '/borobudur.png',
-      label: 'Borobudur',
-      x: 65,
-      y: 43,
+    { 
+      id: 1, 
+      image: '/borobudur.png', 
+      label: 'Borobudur', 
+      x: 65, 
+      y: 43, 
       mobileX: 65,
-      mobileY: 47,
-      delay: 0
+      mobileY:47,
+      delay: 0 
     },
-    {
-      id: 2,
-      image: '/prambanan.png',
-      label: 'Prambanan',
-      x: 57,
-      y: 63,
+    { 
+      id: 2, 
+      image: '/prambanan.png', 
+      label: 'Prambanan', 
+      x: 57, 
+      y: 63, 
       mobileX: 57,
       mobileY: 67,
-      delay: 0.5
+      delay: 0.5 
     },
-    {
-      id: 3,
-      image: '/ondel-ondel.png',
-      label: 'Ondel - Ondel',
-      x: 20,
-      y: 48,
+    { id: 3, 
+      image: '/ondel-ondel.png', 
+      label: 'Ondel - Ondel', 
+      x: 20, 
+      y: 48, 
       mobileX: 20,
       mobileY: 52,
-      delay: 1
+      delay: 1 
     },
-    {
-      id: 4,
-      image: '/mega-mendung.png',
-      label: 'Mega Mendung',
-      x: 33,
-      y: 63,
+    { 
+      id: 4, 
+      image: '/mega-mendung.png', 
+      label: 'Mega Mendung', 
+      x: 33, 
+      y: 63, 
       mobileX: 33,
       mobileY: 62,
-      delay: 1.5
+      delay: 1.5 
     },
-    {
-      id: 5,
-      image: '/angklung.png',
-      label: 'Angklung',
-      x: 35,
-      y: 43,
+    { 
+      id: 5, 
+      image: '/angklung.png', 
+      label: 'Angklung', 
+      x: 35, 
+      y: 43, 
       mobileX: 35,
       mobileY: 47,
-      delay: 2
+      delay: 2 
     },
-    {
-      id: 6,
-      image: '/reog-ponorogo.png',
-      label: 'Wayang',
-      x: 75,
-      y: 58,
+    { 
+      id: 6, 
+      image: '/reog-ponorogo.png', 
+      label: 'Wayang', 
+      x: 75, 
+      y: 58, 
       mobileX: 75,
       mobileY: 57,
-      delay: 2.5
+      delay: 2.5 
     },
   ];
 
@@ -126,7 +125,7 @@ const RegisterPage = () => {
   const translateY = 50 - centerY;
 
   const getTransform = () => {
-    switch (animationPhase) {
+    switch(animationPhase) {
       case "initial":
         return "scale(1) translate(0%, 0%)";
       case "zoomed":
@@ -139,7 +138,7 @@ const RegisterPage = () => {
   };
 
   const getTransitionDuration = () => {
-    switch (animationPhase) {
+    switch(animationPhase) {
       case "zoomed":
         return "4000ms";
       case "zooming-out":
@@ -151,7 +150,7 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Side - Register Form with Javanese Cloud Pattern */}
+      {/* Left Side - Login Form with Javanese Cloud Pattern */}
       <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-[#fef8ec] to-[#f9e5c8] p-4 md:p-8 relative overflow-hidden order-2 lg:order-1">
 
         {/* Javanese Cloud Pattern */}
@@ -195,14 +194,14 @@ const RegisterPage = () => {
 
         <div className="w-full max-w-md relative z-10 py-4">
           {/* Logo with Javanese Touch */}
-          <Link href="./" className="flex items-center gap-2 md:gap-3 group mb-4 md:mb-6 justify-center lg:justify-start">
+          <Link href="./" className="flex items-center gap-2 md:gap-3 group mb-4 md:mb-6 justify-start">
             <div className="relative">
               <div className="w-10 h-10 md:w-16 md:h-16 bg-gradient-to-br from-[#a92e23] to-[#d9b45f] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 border-2 border-white">
                 <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} className="w-5 h-5 md:w-12 md:h-12" />
               </div>
               <div className="absolute -top-1 -right-1 w-2 h-2 md:w-5 md:h-5 bg-gradient-to-br from-[#d9b45f] to-[#a92e23] rounded-full animate-pulse-slow border border-white"></div>
             </div>
-            <div className="text-center lg:text-left">
+            <div className="text-center">
               <h1 className="text-base md:text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
                 <Image src="/InculturaTeks.svg" alt="logo" width={80} height={16} className="w-[60px] h-[30px] md:w-[80px] md:h-[40px]" />
               </h1>
@@ -211,72 +210,47 @@ const RegisterPage = () => {
           </Link>
 
           {/* Welcome Text with Javanese Style */}
-          <div className="mb-4 md:mb-6 text-center lg:text-start">
-            <div className="inline-block bg-[#a92e23] text-white px-3 py-1 md:px-4 md:py-1 rounded-full text-xs md:text-sm mb-2 md:mb-3">
+          <div className="mb-4 md:mb-6 text-start">
+            <div className="inline-block bg-[#a92e23] text-white px-2 py-1 md:px-4 md:py-1 rounded-full text-[10px] md:text-sm mb-2 md:mb-3">
               Sugeng Rawuh
             </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#a92d23] mb-1 md:mb-2">Buat Akun Baru</h1>
-            <p className="text-[#6b4c48] text-xs md:text-base">Daftar untuk menjelajahi budaya Indonesia</p>
+            <h1 className="text-xl md:text-3xl font-bold text-[#a92d23] mb-1 md:mb-2">Selamat Datang</h1>
+            <p className="text-[#6b4c48] text-xs md:text-base">Masuk ke akun Incultura Anda</p>
           </div>
 
-          {/* Register Form with Javanese Elements */}
+          {/* Login Form with Javanese Elements */}
           <div className="space-y-3 md:space-y-4">
             <div>
-              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Nama Pengguna</label>
+              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Email atau nama pengguna</label>
               <input
                 type="text"
-                placeholder="Contoh: budi123"
-                className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Alamat Email</label>
-              <input
-                type="email"
                 placeholder="Contoh: wayan@email.com"
-                className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm"
               />
             </div>
 
             <div className="relative">
-              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Kata Sandi</label>
+              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Kata sandi</label>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Buat kata sandi yang kuat"
-                className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-10 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
+                placeholder="Masukkan kata sandi Anda"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-8 md:pr-12 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2/3 transform -translate-y-1/2 text-[#a92e23] hover:text-[#88241b] cursor-pointer"
+                className="absolute right-2 top-2/3 md:right-3 transform -translate-y-1/2 text-[#a92e23] hover:text-[#88241b] cursor-pointer"
               >
-                {showPassword ? <Eye size={16} className="md:w-5 md:h-5 w-4 h-4" /> : <EyeOff size={16} className="md:w-5 md:h-5 w-4 h-4" />}
-              </button>
-            </div>
-
-            <div className="relative">
-              <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Konfirmasi Kata Sandi</label>
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Ulangi kata sandi Anda"
-                className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-10 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-2/3 transform -translate-y-1/2 text-[#a92e23] hover:text-[#88241b] cursor-pointer"
-              >
-                {showConfirmPassword ? <Eye size={16} className="md:w-5 md:h-5 w-4 h-4" /> : <EyeOff size={16} className="md:w-5 md:h-5 w-4 h-4" />}
+                {showPassword ? <EyeOff size={16} className="md:w-5 md:h-5 w-4 h-4" /> : <Eye size={16} className="md:w-5 md:h-5 w-4 h-4" />}
               </button>
             </div>
 
             <div className="pt-2">
               <button
                 type="button"
-                className="w-full bg-[#a92d23] text-white font-semibold py-2.5 md:py-3 rounded-xl shadow-lg hover:bg-[#92271e] hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden cursor-pointer text-sm md:text-base"
+                className="w-full bg-[#a92d23] text-white font-semibold py-2 md:py-2.5 rounded-xl shadow-lg hover:shadow-[#a92d23] hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 overflow-hidden cursor-pointer text-xs md:text-sm"
               >
-                <span className="relative z-10">Daftar Sekarang</span>
+                <span className="relative z-10">Masuk</span>
               </button>
             </div>
           </div>
@@ -284,8 +258,11 @@ const RegisterPage = () => {
           {/* Footer Links */}
           <div className="mt-4 md:mt-6 text-center space-y-2 md:space-y-3">
             <div>
-              <span className="text-[#6b4c48] text-xs md:text-sm">Sudah punya akun? </span>
-              <a href="#" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Masuk di sini</a>
+              <a href="#" className="text-[#a92e23] hover:underline text-xs md:text-sm">Lupa kata sandi?</a>
+            </div>
+            <div>
+              <span className="text-[#6b4c48] text-xs md:text-sm">Belum punya akun? </span>
+              <a href="#" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Daftar di sini</a>
             </div>
           </div>
         </div>
@@ -323,15 +300,15 @@ const RegisterPage = () => {
                 }}
               >
                 <div className="bg-white/90 backdrop-blur-sm rounded-lg md:rounded-xl p-1 md:p-2 shadow-lg hover:scale-110 transition-transform cursor-pointer animate-float-element"
-                  style={{
+                  style={{ 
                     animation: `floatElement 3s ease-in-out ${element.delay}s infinite both`,
                   }}>
                   <div className="relative w-6 h-6 md:w-8 md:h-8">
-                    <Image
-                      src={element.image}
-                      alt={element.label}
+                    <Image 
+                      src={element.image} 
+                      alt={element.label} 
                       fill
-                      className="object-contain"
+                      className="object-contain" 
                     />
                   </div>
                 </div>
@@ -395,4 +372,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

@@ -1,5 +1,8 @@
 @import "tailwindcss";
-
+/* font satoshi */
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+ /* font poppins  */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:wght@400;500;600;700&display=swap');
 :root {
   --background: #fef7ed;
   --foreground: #6e392b;
@@ -84,6 +87,25 @@ html {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@keyframes float-auth {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(5px) translateX(10px);
+  }
+  75% {
+    transform: translateY(-5px) translateX(-5px);
+  }
+}
+
+.animate-float-auth {
+  animation: float linear infinite;
 }
 
 /* Custom animation delays */
