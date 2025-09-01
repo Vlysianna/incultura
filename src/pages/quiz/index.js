@@ -177,12 +177,12 @@ export default function QuizPage() {
                   >
                     Daftar
                   </Link>
-                  <button 
-                    onClick={() => signIn()}
+                  <Link 
+                    href="/login"
                     className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     Masuk
-                  </button>
+                  </Link>
                 </>
               )}
             </div>
@@ -427,7 +427,7 @@ export default function QuizPage() {
                 Daftar Sekarang
               </Link>
               <button 
-                onClick={() => signIn()}
+                onClick={() => signIn('credentials', { callbackUrl: '/quiz' })}
                 className="border border-amber-500 text-amber-600 px-6 py-3 rounded-xl hover:bg-amber-50 transition-colors font-medium"
               >
                 Masuk

@@ -1,13 +1,21 @@
 import React, { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Heart, ShoppingCart, Eye, MapPin } from 'lucide-react'
+import { useNotification } from '../context/NotificationContext';
 
 export default function MarketPlaceCard({ item, index, onRedeem }) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [redeeming, setRedeeming] = useState(false)
+  const { addNotification } = useNotification();
+  const { data: session } = useSession();
 
   const handleRedeem = async () => {
+    if (!session?.user) {
+      addNotification('Silakan login terlebih dahulu untuk menukar item.', 'warning')
+      return
+    }
     setRedeeming(true);
     try {
       const response = await fetch('/api/marketplace', {
@@ -19,14 +27,14 @@ export default function MarketPlaceCard({ item, index, onRedeem }) {
       });
 
       if (response.ok) {
-        alert('Penukaran berhasil!');
+        addNotification('Penukaran berhasil!', 'success');
         if (onRedeem) onRedeem();
       } else {
         const error = await response.json();
-        alert(`Penukaran gagal: ${error.error}`);
+        addNotification(`Penukaran gagal: ${error.error}`, 'error');
       }
     } catch (error) {
-      alert('Terjadi kesalahan saat menukar item');
+      addNotification('Terjadi kesalahan saat menukar item', 'error');
     } finally {
       setRedeeming(false);
     }

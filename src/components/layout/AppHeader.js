@@ -1,13 +1,15 @@
+"use client"
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function AppHeader() {
   const { data: session } = useSession()
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -25,7 +27,7 @@ export default function AppHeader() {
   ]
 
   const isActiveRoute = (href) => {
-    return router.pathname === href || router.pathname.startsWith(href)
+    return pathname === href || (pathname || '').startsWith(href)
   }
 
   return (
@@ -96,7 +98,7 @@ export default function AppHeader() {
                   Daftar
                 </Link>
                 <Link 
-                  href="/api/auth/signin"
+                  href="/login"
                   className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Masuk

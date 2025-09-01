@@ -46,25 +46,44 @@ export default function ArticleDetail() {
       const a = list.find(x => String(x.id) === String(id))
       setArticle(a)
       if (session?.user) {
-        fetch('/api/articles/view', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ articleId: id })
-        }).then(r => r.json()).then(j => {
-          if (j.success) {
-            const notification = document.createElement('div')
-            notification.innerHTML = `
-              <div class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg z-50 flex items-center">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-                <span>Kamu mendapat +10 koin untuk membaca!</span>
-              </div>
-            `
-            document.body.appendChild(notification)
-            setTimeout(() => document.body.removeChild(notification), 3000)
-          }
-        }).catch(() => { })
+        // Use localStorage to prevent duplicate notifications for the same article/user
+        const coinKey = `article_coin_${id}_${session.user.id}`
+        if (!localStorage.getItem(coinKey)) {
+          fetch('/api/articles/view', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ articleId: id })
+          }).then(r => r.json()).then(j => {
+            if (j.success) {
+              const notification = document.createElement('div')
+              notification.innerHTML = `
+                <div class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg z-50 flex items-center">
+                  <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  <span>Kamu mendapat +10 koin untuk membaca!</span>
+                </div>
+              `
+              document.body.appendChild(notification)
+              setTimeout(() => document.body.removeChild(notification), 3000)
+              localStorage.setItem(coinKey, 'awarded')
+            } else if (j.message && j.message.includes('already awarded')) {
+              // Show a subtle info notification if already read
+              const notification = document.createElement('div')
+              notification.innerHTML = `
+                <div class="fixed top-4 right-4 bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg shadow-lg z-50 flex items-center">
+                  <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  <span>Kamu sudah pernah membaca artikel ini. Tidak ada koin tambahan.</span>
+                </div>
+              `
+              document.body.appendChild(notification)
+              setTimeout(() => document.body.removeChild(notification), 3000)
+              localStorage.setItem(coinKey, 'already')
+            }
+          }).catch((err) => { console.error('Error calling /api/articles/view', err) })
+        }
       }
     })
   }, [id, session])
@@ -126,12 +145,12 @@ export default function ArticleDetail() {
       <Nav />
       {/* Konten Artikel */}
       <main className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
-        <a href="/articles" className="inline-flex items-center text-[#a92d23] hover:text-[#7a1f1a] mb-6 transition-colors group">
+        <Link href="/articles" className="inline-flex items-center text-[#a92d23] hover:text-[#7a1f1a] mb-6 transition-colors group">
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
           Kembali ke Artikel
-        </a>
+        </Link>
 
         <motion.article
           className="bg-white rounded-xl shadow-md p-8 border border-[#f3d099]"

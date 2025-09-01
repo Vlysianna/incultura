@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     return res.json(items)
   }
   if (req.method === 'POST') {
-  const user = await getServerUser(req)
+  const user = await getServerUser(req, res)
   if (!user) return res.status(401).json({ error: 'Authentication required' })
   const userId = user.id
     const { itemId } = req.body

@@ -158,12 +158,12 @@ export default function Articles() {
                   >
                     Daftar
                   </Link>
-                  <button 
-                    onClick={() => signIn()}
+                  <Link 
+                    href="/login"
                     className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     Masuk
-                  </button>
+                  </Link>
                 </>
               )}
             </div>

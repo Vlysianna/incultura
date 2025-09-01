@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import LoginPage from '@/components/ui/LoginModal';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [animationPhase, setAnimationPhase] = useState('initial');
   const [showFloatingElements, setShowFloatingElements] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const zoomInTimer = setTimeout(() => {
@@ -219,11 +225,30 @@ const LoginPage = () => {
           </div>
 
           {/* Login Form with Javanese Elements */}
-          <div className="space-y-3 md:space-y-4">
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError(null);
+            try {
+              const res = await signIn('credentials', { redirect: false, email, password });
+              setLoading(false);
+              if (res?.error) {
+                setError(res.error || 'Gagal masuk. Periksa kembali kredensial Anda.');
+                return;
+              }
+              // success
+              router.push('/');
+            } catch (err) {
+              setLoading(false);
+              setError('Terjadi kesalahan saat mencoba masuk.');
+            }
+          }} className="space-y-3 md:space-y-4">
             <div>
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Email atau nama pengguna</label>
               <input
                 type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Contoh: wayan@email.com"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm"
               />
@@ -233,6 +258,8 @@ const LoginPage = () => {
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Kata sandi</label>
               <input
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan kata sandi Anda"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-8 md:pr-12 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm"
               />
@@ -245,15 +272,20 @@ const LoginPage = () => {
               </button>
             </div>
 
+            {error && (
+              <div className="text-sm text-red-600">{error}</div>
+            )}
+
             <div className="pt-2">
               <button
-                type="button"
-                className="w-full bg-[#a92d23] text-white font-semibold py-2 md:py-2.5 rounded-xl shadow-lg hover:shadow-[#a92d23] hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 overflow-hidden cursor-pointer text-xs md:text-sm"
+                type="submit"
+                disabled={loading}
+                className={`w-full bg-[#a92d23] text-white font-semibold py-2 md:py-2.5 rounded-xl shadow-lg transform transition-all duration-300 relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 overflow-hidden cursor-pointer text-xs md:text-sm ${loading ? 'opacity-60 cursor-wait' : 'hover:shadow-[#a92d23] hover:shadow-xl hover:scale-[1.02]'}`}
               >
-                <span className="relative z-10">Masuk</span>
+                <span className="relative z-10">{loading ? 'Sedang masuk...' : 'Masuk'}</span>
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Footer Links */}
           <div className="mt-4 md:mt-6 text-center space-y-2 md:space-y-3">
@@ -262,7 +294,7 @@ const LoginPage = () => {
             </div>
             <div>
               <span className="text-[#6b4c48] text-xs md:text-sm">Belum punya akun? </span>
-              <a href="#" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Daftar di sini</a>
+              <Link href="/register" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Daftar di sini</Link>
             </div>
           </div>
         </div>

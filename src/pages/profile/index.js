@@ -30,12 +30,12 @@ export default function Profile() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50/30 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-b from-white to-white/95 relative overflow-hidden">
         {/* Background Decoration */}
-        <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-indigo-200/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-[#f3d099]/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
         
         {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-lg border-b border-indigo-200/20">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group">
@@ -87,7 +87,7 @@ export default function Profile() {
                   Daftar
                 </Link>
                 <button 
-                  onClick={() => signIn()}
+                  onClick={() => signIn('credentials', { callbackUrl: '/profile' })}
                   className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Masuk
@@ -104,7 +104,7 @@ export default function Profile() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-20"
           >
-            <User className="w-24 h-24 text-indigo-300 mx-auto mb-6" />
+            <User className="w-24 h-24 text-[#f3d099]/60 mx-auto mb-6" />
             <h1 className="text-4xl font-bold text-gray-800 mb-4">Akses Terbatas</h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Silakan masuk atau daftar untuk mengakses halaman profil Anda dan melihat progres pembelajaran budaya.
@@ -112,13 +112,13 @@ export default function Profile() {
             <div className="flex gap-4 justify-center">
               <Link 
                 href="/register"
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                className="bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
               >
                 Daftar Sekarang
               </Link>
               <button 
-                onClick={() => signIn()}
-                className="border border-indigo-600 text-indigo-600 px-8 py-4 rounded-xl hover:bg-indigo-50 transition-colors font-medium"
+                onClick={() => signIn('credentials', { callbackUrl: '/profile' })}
+                className="border border-[#a92d23] text-[#a92d23] px-8 py-4 rounded-xl hover:bg-[#f3d099]/10 transition-colors font-medium"
               >
                 Masuk
               </button>
@@ -131,7 +131,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-white to-white/95 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a92d23] mx-auto mb-4"></div>
           <p className="text-gray-600">Memuat profil...</p>
@@ -141,14 +141,14 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white to-white/95 relative overflow-hidden">
       {/* Background Decoration */}
-      <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-indigo-200/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-[#f3d099]/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-1/4 h-64 bg-gradient-to-tr from-[#a92d23]/10 to-transparent rounded-tr-[80px] pointer-events-none"></div>
       
       {/* Floating Elements */}
       <div className="absolute top-32 left-10 animate-float">
-        <Trophy className="w-8 h-8 text-indigo-400" />
+        <Trophy className="w-8 h-8 text-[#f3d099]" />
       </div>
       <div className="absolute top-1/3 right-20 animate-bounce">
         <Sparkles className="w-6 h-6 text-[#a92d23]" />
@@ -157,7 +157,7 @@ export default function Profile() {
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-indigo-200/20' 
+          ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20' 
           : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -224,7 +224,21 @@ export default function Profile() {
 
       {/* Main Content */}
       <main className="pt-28 pb-16 px-6 max-w-6xl mx-auto relative z-10">
-        
+        {/* Compute dynamic statistics once data loaded */}
+        {u && !u._stats && (() => {
+          const quizActivities = u.activities?.filter(a => a.type.startsWith('quiz')) || []
+          const quizAnswered = quizActivities.length
+          const quizCorrect = quizActivities.filter(a => a.type === 'quiz_correct').length
+          const quizAccuracy = quizAnswered ? Math.round((quizCorrect / quizAnswered) * 100) : 0
+          const articleReads = u.activities?.filter(a => a.type === 'article_view').length || 0
+          const articleWrites = Array.isArray(u.articles) ? u.articles.length : 0
+          const redeemActs = u.activities?.filter(a => a.type === 'redeem') || []
+          const itemsBought = redeemActs.length
+          const coinsSpent = redeemActs.reduce((s, a) => s + (a.coins < 0 ? -a.coins : 0), 0)
+          u._stats = { quizAnswered, quizAccuracy, articleReads, articleWrites, itemsBought, coinsSpent }
+          return null
+        })()}
+
         {/* Profile Header */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -235,7 +249,7 @@ export default function Profile() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-32 h-32 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-full flex items-center justify-center shadow-lg">
                 <User className="w-16 h-16 text-white" />
               </div>
               <button className="absolute -bottom-2 -right-2 p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
@@ -262,16 +276,16 @@ export default function Profile() {
                 
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-1">
-                    <Award className="w-5 h-5 text-purple-500" />
-                    <span className="text-2xl font-bold text-purple-600">{u?.activities?.length || 0}</span>
+                    <Award className="w-5 h-5 text-[#a92d23]" />
+                    <span className="text-2xl font-bold text-[#a92d23]">{u?.activities?.length || 0}</span>
                   </div>
                   <p className="text-sm text-gray-500">Aktivitas</p>
                 </div>
                 
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-1">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                    <span className="text-2xl font-bold text-green-600">
+                    <Calendar className="w-5 h-5 text-[#f3d099]" />
+                    <span className="text-2xl font-bold text-[#f3d099]">
                       {u?.createdAt ? Math.floor((Date.now() - new Date(u.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0}
                     </span>
                   </div>
@@ -292,8 +306,8 @@ export default function Profile() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Brain className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-[#f3d099]/20 rounded-full">
+                <Brain className="w-6 h-6 text-[#a92d23]" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-800">Kuis</h3>
@@ -303,11 +317,11 @@ export default function Profile() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Soal Dijawab</span>
-                <span className="font-medium">42</span>
+                <span className="font-medium">{u?._stats?.quizAnswered ?? 0}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Akurasi</span>
-                <span className="font-medium text-green-600">85%</span>
+                <span className="font-medium text-[#a92d23]">{u?._stats?.quizAccuracy ?? 0}%</span>
               </div>
             </div>
           </motion.div>
@@ -320,8 +334,8 @@ export default function Profile() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-green-100 rounded-full">
-                <BookOpen className="w-6 h-6 text-green-600" />
+              <div className="p-3 bg-[#a92d23]/20 rounded-full">
+                <BookOpen className="w-6 h-6 text-[#a92d23]" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-800">Artikel</h3>
@@ -331,11 +345,11 @@ export default function Profile() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Dibaca</span>
-                <span className="font-medium">15</span>
+                <span className="font-medium">{u?._stats?.articleReads ?? 0}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Ditulis</span>
-                <span className="font-medium text-blue-600">3</span>
+                <span className="font-medium text-[#f3d099]">{u?._stats?.articleWrites ?? 0}</span>
               </div>
             </div>
           </motion.div>
@@ -348,8 +362,8 @@ export default function Profile() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-purple-100 rounded-full">
-                <ShoppingBag className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-[#f3d099]/20 rounded-full">
+                <ShoppingBag className="w-6 h-6 text-[#a92d23]" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-800">Marketplace</h3>
@@ -359,11 +373,11 @@ export default function Profile() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Item Dibeli</span>
-                <span className="font-medium">7</span>
+                <span className="font-medium">{u?._stats?.itemsBought ?? 0}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Koin Digunakan</span>
-                <span className="font-medium text-orange-600">340</span>
+                <span className="font-medium text-[#a92d23]">{u?._stats?.coinsSpent ?? 0}</span>
               </div>
             </div>
           </motion.div>
@@ -377,7 +391,7 @@ export default function Profile() {
           className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-8"
         >
           <div className="flex items-center gap-3 mb-6">
-            <Activity className="w-6 h-6 text-indigo-600" />
+            <Activity className="w-6 h-6 text-[#a92d23]" />
             <h2 className="text-2xl font-bold text-gray-800">Riwayat Aktivitas</h2>
           </div>
 
@@ -392,13 +406,13 @@ export default function Profile() {
                   className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   <div className={`p-2 rounded-full ${
-                    activity.type === 'quiz' ? 'bg-blue-100' :
-                    activity.type === 'article' ? 'bg-green-100' :
-                    'bg-purple-100'
+                    activity.type === 'quiz' ? 'bg-[#f3d099]/20' :
+                    activity.type === 'article' ? 'bg-[#a92d23]/20' :
+                    'bg-[#f3d099]/20'
                   }`}>
-                    {activity.type === 'quiz' && <Brain className="w-5 h-5 text-blue-600" />}
-                    {activity.type === 'article' && <BookOpen className="w-5 h-5 text-green-600" />}
-                    {activity.type === 'marketplace' && <ShoppingBag className="w-5 h-5 text-purple-600" />}
+                    {activity.type === 'quiz' && <Brain className="w-5 h-5 text-[#a92d23]" />}
+                    {activity.type === 'article' && <BookOpen className="w-5 h-5 text-[#a92d23]" />}
+                    {activity.type === 'marketplace' && <ShoppingBag className="w-5 h-5 text-[#a92d23]" />}
                   </div>
                   
                   <div className="flex-1">
@@ -418,7 +432,7 @@ export default function Profile() {
                   </div>
                   
                   <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                    activity.coins > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    activity.coins > 0 ? 'bg-[#f3d099]/20 text-[#a92d23]' : 'bg-gray-100 text-gray-600'
                   }`}>
                     <Coins className="w-4 h-4" />
                     {activity.coins > 0 ? `+${activity.coins}` : activity.coins}
@@ -434,13 +448,13 @@ export default function Profile() {
               <div className="flex gap-3 justify-center">
                 <Link 
                   href="/quiz"
-                  className="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors"
+                  className="bg-[#a92d23] text-white px-6 py-3 rounded-xl hover:bg-[#7a1f1a] transition-colors"
                 >
                   Mulai Kuis
                 </Link>
                 <Link 
                   href="/articles"
-                  className="border border-green-500 text-green-600 px-6 py-3 rounded-xl hover:bg-green-50 transition-colors"
+                  className="border border-[#a92d23] text-[#a92d23] px-6 py-3 rounded-xl hover:bg-[#f3d099]/10 transition-colors"
                 >
                   Baca Artikel
                 </Link>

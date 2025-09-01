@@ -3,11 +3,15 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "./ui/Button";
-import LoginModal from "./ui/LoginModal";
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [coins, setCoins] = useState(null)
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +20,21 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!session?.user?.id) return setCoins(null)
+    const fetchCoins = async () => {
+      try {
+        const res = await fetch(`/api/coins?userId=${session.user.id}`)
+        if (!res.ok) return setCoins(null)
+        const data = await res.json()
+        setCoins(data.coins ?? data.coins === 0 ? data.coins : data.coins)
+      } catch (e) {
+        setCoins(null)
+      }
+    }
+    fetchCoins()
+  }, [session])
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -63,23 +82,42 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            <Link 
-              href="/register" 
-              className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
-            >
-              Daftar
-            </Link>
-            <Button 
-              className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0" 
-              onClick={() => setOpen(true)}
-            >
-              Masuk
-            </Button>
+            {!session ? (
+              <>
+                <Link 
+                  href="/register" 
+                  className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
+                >
+                  Daftar
+                </Link>
+                <Button 
+                  className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0" 
+                  onClick={() => router.push('/login')}
+                >
+                  Masuk
+                </Button>
+              </>
+            ) : (
+              <div className="flex items-center gap-4 border border-transparent rounded-lg px-3 py-1 bg-white/70 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  {session.user?.image ? (
+                    <Image src={session.user.image} alt="avatar" width={36} height={36} className="rounded-full" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[#a92d23] text-white flex items-center justify-center font-semibold">{(session.user?.name || session.user?.email || 'U').charAt(0)}</div>
+                  )}
+                </div>
+                <div className="text-sm text-[#7a1f1a]">
+                  <div className="font-medium">{session.user?.name || session.user?.email}</div>
+                  <div className="text-xs text-yellow-600">{coins ?? '...'} koin</div>
+                </div>
+                <button onClick={() => signOut()} className="text-sm text-[#a92d23] hover:text-[#7a1f1a] ml-2">Keluar</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <LoginModal open={open} onClose={() => setOpen(false)} />
+      {/* Login modal removed: using dedicated /login page now */}
     </header>
   );
 }

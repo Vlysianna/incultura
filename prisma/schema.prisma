@@ -7,58 +7,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model activity {
   id        Int      @id @default(autoincrement())
-  name      String?
-  email     String   @unique
-  password  String?
-  image     String?
-  coins     Int      @default(0)
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  activities Activity[]
-  articles  Article[]
-}
-
-model Article {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String   @db.Text
-  image     String?
-  region    String
-  createdAt DateTime @default(now())
-  status    ArticleStatus @default(PENDING)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
-}
-
-enum ArticleStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-model Quiz {
-  id            Int      @id @default(autoincrement())
-  question      String
-  options       String   
-  correctAnswer String
-}
-
-model Merchandise {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  image       String?
-  cost        Int
-}
-
-model Activity {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   type      String
   detail    String?
   coins     Int
   createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], map: "Activity_userId_fkey")
+
+  @@index([userId], map: "Activity_userId_fkey")
+}
+
+model article {
+  id        Int            @id @default(autoincrement())
+  title     String
+  content   String         @db.Text
+  image     String?
+  region    String
+  createdAt DateTime       @default(now())
+  authorId  Int?
+  status    article_status @default(PENDING)
+  user      user?          @relation(fields: [authorId], references: [id], map: "Article_authorId_fkey")
+
+  @@index([authorId], map: "Article_authorId_fkey")
+}
+
+model merchandise {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  image       String?
+  price       Float?    @default(0) @db.Float
+  category    String?   @default("Lainnya")
+  inStock     Boolean?  @default(true)
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model quiz {
+  id            Int       @id @default(autoincrement())
+  question      String
+  options       String
+  correctAnswer String
+  createdAt     DateTime? @default(now()) @db.DateTime(0)
+}
+
+model user {
+  id        Int        @id @default(autoincrement())
+  name      String?
+  email     String     @unique(map: "User_email_key")
+  password  String?
+  image     String?
+  coins     Int        @default(0)
+  createdAt DateTime   @default(now())
+  isAdmin   Boolean    @default(false)
+  activity  activity[]
+  article   article[]
+}
+
+enum article_status {
+  PENDING
+  APPROVED
+  REJECTED
 }

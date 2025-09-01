@@ -11,7 +11,12 @@ export default async function handler(req, res) {
     userId = user.id
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { coins: true }, include: { activities: { orderBy: { createdAt: 'desc' } } } })
-  if (!user) return res.status(404).json({ error: 'user not found' })
-  res.json(user)
+  // fetch user with activities and coins
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { activities: { orderBy: { createdAt: 'desc' } } }
+  })
+  if (!u) return res.status(404).json({ error: 'user not found' })
+  // respond with a small payload: coins and recent activities
+  res.json({ coins: u.coins, activities: u.activities || [] })
 }

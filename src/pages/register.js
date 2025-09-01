@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
   const [animationPhase, setAnimationPhase] = useState('initial');
   const [showFloatingElements, setShowFloatingElements] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -220,11 +229,40 @@ const RegisterPage = () => {
           </div>
 
           {/* Register Form with Javanese Elements */}
-          <div className="space-y-3 md:space-y-4">
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setError(null);
+            if (!name || !email || !password) return setError('Semua field harus diisi');
+            if (password !== confirmPassword) return setError('Kata sandi dan konfirmasi tidak sama');
+            setLoading(true);
+            try {
+              const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+              });
+              const data = await res.json();
+              setLoading(false);
+              if (!res.ok) return setError(data.error || 'Gagal mendaftar');
+              // success -> auto sign-in then redirect to home
+              const signin = await signIn('credentials', { redirect: false, email, password });
+              if (signin?.error) {
+                // fallback: go to login page
+                router.push('/login');
+                return;
+              }
+              router.push('/');
+            } catch (err) {
+              setLoading(false);
+              setError('Terjadi kesalahan jaringan');
+            }
+          }} className="space-y-3 md:space-y-4">
             <div>
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Nama Pengguna</label>
               <input
                 type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Contoh: budi123"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
               />
@@ -234,6 +272,8 @@ const RegisterPage = () => {
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Alamat Email</label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Contoh: wayan@email.com"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
               />
@@ -243,6 +283,8 @@ const RegisterPage = () => {
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Kata Sandi</label>
               <input
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Buat kata sandi yang kuat"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-10 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
               />
@@ -259,6 +301,8 @@ const RegisterPage = () => {
               <label className="block text-xs md:text-sm font-medium text-[#6b4c48] mb-1 md:mb-2">Konfirmasi Kata Sandi</label>
               <input
                 type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Ulangi kata sandi Anda"
                 className="w-full px-3 py-2 md:px-4 md:py-2.5 pr-10 border border-[#d9b45f] rounded-lg focus:ring-2 focus:ring-[#a92e23] focus:border-transparent outline-none transition-all bg-white/80 text-[#6b4c48] text-xs md:text-sm placeholder:text-[#9c7c6e]"
               />
@@ -271,21 +315,26 @@ const RegisterPage = () => {
               </button>
             </div>
 
+            {error && (
+              <div className="text-sm text-red-600">{error}</div>
+            )}
+
             <div className="pt-2">
               <button
-                type="button"
-                className="w-full bg-[#a92d23] text-white font-semibold py-2.5 md:py-3 rounded-xl shadow-lg hover:bg-[#92271e] hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 relative overflow-hidden cursor-pointer text-sm md:text-base"
+                type="submit"
+                disabled={loading}
+                className={`w-full bg-[#a92d23] text-white font-semibold py-2.5 md:py-3 rounded-xl shadow-lg transform transition-all duration-300 relative overflow-hidden cursor-pointer text-sm md:text-base ${loading ? 'opacity-60 cursor-wait' : 'hover:bg-[#92271e] hover:shadow-xl hover:scale-[1.02]'}`}
               >
-                <span className="relative z-10">Daftar Sekarang</span>
+                <span className="relative z-10">{loading ? 'Sedang mendaftar...' : 'Daftar Sekarang'}</span>
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Footer Links */}
           <div className="mt-4 md:mt-6 text-center space-y-2 md:space-y-3">
             <div>
               <span className="text-[#6b4c48] text-xs md:text-sm">Sudah punya akun? </span>
-              <a href="#" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Masuk di sini</a>
+              <Link href="/login" className="text-[#a92e23] hover:underline font-medium text-xs md:text-sm">Masuk di sini</Link>
             </div>
           </div>
         </div>
