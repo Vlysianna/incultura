@@ -3,7 +3,7 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X } from 'lucide-react'
+import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X, Upload, ImageIcon } from 'lucide-react'
 
 export default function Articles() {
   const { data: session } = useSession()
@@ -11,10 +11,13 @@ export default function Articles() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [region, setRegion] = useState('')
+  const [image, setImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
   const [scrolled, setScrolled] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   useEffect(() => { 
     fetchArticles()
@@ -39,21 +42,63 @@ export default function Articles() {
     }
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (file.size > 5000000) { // 5MB limit
+        alert('Ukuran file terlalu besar. Maksimal 5MB.')
+        return
+      }
+      setImage(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setImage(null)
+    setImagePreview(null)
+  }
+
   async function submitArticle(e) {
     e.preventDefault()
     if (!session) return alert('Silakan login terlebih dahulu!')
     
+    setIsSubmitting(true)
     try {
+      let imageUrl = null
+      
+      // Upload image if exists
+      if (image) {
+        const formData = new FormData()
+        formData.append('image', image)
+        
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json()
+          imageUrl = uploadData.url
+        }
+      }
+
       const res = await fetch('/api/articles', { 
         method: 'POST', 
         headers: {'Content-Type': 'application/json'}, 
-        body: JSON.stringify({ title, content, region }) 
+        body: JSON.stringify({ title, content, region, image: imageUrl }) 
       })
       
       if (res.ok) {
         setTitle('')
         setContent('')
         setRegion('')
+        setImage(null)
+        setImagePreview(null)
         setShowForm(false)
         fetchArticles() // Refresh articles list
       } else {
@@ -62,13 +107,29 @@ export default function Articles() {
     } catch (error) {
       console.error('Error submitting article:', error)
       alert('Terjadi kesalahan saat menyimpan artikel')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  const filteredArticles = articles.filter(article => 
-    article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.region?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredArticles = articles.filter(article => {
+    // Artikel APPROVED selalu muncul
+    if (article.status === 'APPROVED') {
+      return (
+        article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.region?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    // Artikel PENDING hanya muncul untuk author
+    if (article.status === 'PENDING' && session?.user && article.user?.id === session.user.id) {
+      return (
+        article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.region?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    // Artikel lain tidak ditampilkan
+    return false;
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-amber-50/30 relative overflow-hidden">
@@ -268,6 +329,67 @@ export default function Articles() {
                   />
                 </div>
 
+                {/* Image Upload Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Gambar Artikel (Opsional)</label>
+                  <div className="space-y-4">
+                    {!imagePreview ? (
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          id="image-upload"
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#a92d23] transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100"
+                        >
+                          <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                          <span className="text-sm text-gray-600 font-medium">Klik untuk upload gambar</span>
+                          <span className="text-xs text-gray-400">PNG, JPG, JPEG (Max 5MB)</span>
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <div className="relative w-full h-48 rounded-xl overflow-hidden">
+                          <Image
+                            src={imagePreview}
+                            alt="Preview"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Gambar terpilih</span>
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('image-upload-replace').click()}
+                            className="text-sm text-[#a92d23] hover:underline"
+                          >
+                            Ganti gambar
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                          id="image-upload-replace"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Isi Artikel</label>
                   <textarea 
@@ -284,14 +406,23 @@ export default function Articles() {
                     type="button"
                     onClick={() => setShowForm(false)}
                     className="flex-1 py-3 px-6 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                    disabled={isSubmitting}
                   >
                     Batal
                   </button>
                   <button 
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-3 px-6 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-3 px-6 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
-                    Publikasikan
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                        Menyimpan...
+                      </div>
+                    ) : (
+                      'Publikasikan'
+                    )}
                   </button>
                 </div>
               </form>
@@ -316,11 +447,18 @@ export default function Articles() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 viewport={{ once: true }}
-                className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border border-white/50"
+                className={`group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden border 
+                  ${article.status === 'PENDING' ? 'bg-yellow-50 border-yellow-300' : 'bg-white/80 border-white/50 backdrop-blur-sm'}`}
               >
-                <div className="p-8">
+                <div className="p-8 relative">
+                  {/* Badge Pending */}
+                  {article.status === 'PENDING' && (
+                    <div className="absolute top-6 right-6 flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-semibold shadow">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" /></svg>
+                      Pending Review
+                    </div>
+                  )}
                   <div className="flex flex-col md:flex-row gap-6">
-                    
                     {/* Content */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-4">
@@ -336,35 +474,60 @@ export default function Articles() {
                         </span>
                       </div>
 
-                      <h2 className="text-2xl md:text-3xl font-bold text-[#a92d23] mb-4 group-hover:text-[#7a1f1a] transition-colors">
+                      <h2 className={`text-2xl md:text-3xl font-bold mb-4 group-hover:text-[#7a1f1a] transition-colors ${article.status === 'PENDING' ? 'text-yellow-800' : 'text-[#a92d23]'}`}>
                         {article.title}
                       </h2>
 
-                      <p className="text-gray-600 text-lg leading-relaxed mb-6 line-clamp-3">
+                      {article.status === 'PENDING' && (
+                        <div className="mb-2 text-yellow-700 text-sm font-medium flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" /></svg>
+                          Artikel ini masih menunggu persetujuan admin.
+                        </div>
+                      )}
+
+                      <p className={`text-lg leading-relaxed mb-6 line-clamp-3 ${article.status === 'PENDING' ? 'text-yellow-900' : 'text-gray-600'}`}>
                         {article.content.replace(/<[^>]+>/g, '').substring(0, 200)}...
                       </p>
 
                       <div className="flex items-center justify-between">
                         <Link 
                           href={`/articles/${article.id}`} 
-                          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-6 py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl 
+                            ${article.status === 'PENDING' ? 'bg-yellow-400 text-yellow-900 hover:bg-yellow-500' : 'bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white'}`}
                         >
                           <Eye className="w-5 h-5" />
                           Baca Selengkapnya
                         </Link>
 
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <div className={`flex items-center gap-2 text-sm ${article.status === 'PENDING' ? 'text-yellow-800' : 'text-gray-500'}`}>
                           <User className="w-4 h-4" />
-                          <span>{article.author?.name || 'Admin'}</span>
+                          <span>{article.user?.name || 'Admin'}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Decorative Element */}
+                    {/* Image or Decorative Element */}
                     <div className="hidden md:block w-32">
-                      <div className="w-full h-full bg-gradient-to-br from-[#f3d099]/20 to-[#a92d23]/20 rounded-xl flex items-center justify-center">
-                        <FileText className="w-16 h-16 text-[#a92d23]/60" />
-                      </div>
+                      {article.image ? (
+                        <div className="w-full h-32 rounded-xl overflow-hidden">
+                          <Image
+                            src={article.image}
+                            alt={article.title}
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className={`w-full h-32 rounded-xl flex items-center justify-center 
+                          ${article.status === 'PENDING' ? 'bg-yellow-100' : 'bg-gradient-to-br from-[#f3d099]/20 to-[#a92d23]/20'}`}>
+                          {article.status === 'PENDING' ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" /></svg>
+                          ) : (
+                            <FileText className="w-16 h-16 text-[#a92d23]/60" />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

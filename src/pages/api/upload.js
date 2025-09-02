@@ -23,18 +23,26 @@ export default async function handler(req, res) {
       console.error('Upload error:', err);
       return res.status(500).json({ error: 'Upload failed' });
     }
-    const file = files.file;
+    const file = files.image || files.file;
     if (!file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
     // Rename file to avoid collisions
     const ext = path.extname(file.originalFilename || file.newFilename);
-    const base = path.basename(file.newFilename, ext);
-    const newName = `${base}${ext}`;
-    const newPath = path.join(form.uploadDir, newName);
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    const newName = `article-${timestamp}-${randomStr}${ext}`;
+    const newPath = path.join(form.uploadDir, 'uploads', newName);
+    
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(form.uploadDir, 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    
     try {
       await fs.promises.rename(file.filepath, newPath);
-      return res.status(200).json({ path: '/' + newName });
+      return res.status(200).json({ url: `/uploads/${newName}` });
     } catch (e) {
       console.error('File move error:', e);
       return res.status(500).json({ error: 'File save failed' });

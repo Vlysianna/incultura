@@ -5,7 +5,15 @@ export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
       const user = await getServerUser(req, res)
-      const where = user?.isAdmin ? {} : { status: 'APPROVED' }
+      let where = {}
+      if (!user?.isAdmin) {
+        where = {
+          OR: [
+            { status: 'APPROVED' },
+            { status: 'PENDING', authorId: user?.id }
+          ]
+        }
+      }
       const articles = await prisma.article.findMany({
         where,
         include: { user: { select: { id: true, name: true, email: true } } },

@@ -30,6 +30,17 @@ export default function ArticlePreview() {
   if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>
   if (!article) return null
 
+  if (--
+    article.status === 'PENDING' &&
+    (!session?.user || (article.user?.id && article.user.id !== session.user.id))
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Artikel belum di-approve dan hanya dapat diakses oleh pembuatnya.
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-amber-50/30 px-4 py-12">
       <div className="max-w-2xl mx-auto bg-white/90 rounded-2xl shadow-lg p-8 relative">
