@@ -4,8 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Sparkles, User } from 'lucide-react'
-import Header from '../../components/Header';
-import { FooterSection } from '../../components/sections';
+import Nav from '../components/Nav'
 
 export default function QuizPage() {
   const { data: session } = useSession()
@@ -72,109 +71,21 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white relative overflow-hidden">
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-blue-200/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-1/4 h-64 bg-gradient-to-tr from-[#a92d23]/10 to-transparent rounded-tr-[80px] pointer-events-none"></div>
       
       {/* Floating Elements */}
       <div className="absolute top-32 left-10 animate-float">
-        <Brain className="w-8 h-8 text-blue-400" />
+        <Brain className="w-8 h-8 text-[#a92d23]" />
       </div>
       <div className="absolute top-1/3 right-20 animate-bounce">
         <Sparkles className="w-6 h-6 text-[#a92d23]" />
       </div>
 
       {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-blue-200/20' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                  <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
-                </h1>
-                <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {[
-                { href: "/", label: "Home" },
-                { href: "/articles", label: "Artikel" },
-                { href: "/quiz", label: "Kuis", active: true },
-                { href: "/marketplace", label: "Marketplace" },
-                { href: "/leaderboard", label: "Leaderboard" },
-                { href: "/profile", label: "Profile" },               
-              ].map((item) => (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className={`text-sm font-medium transition-colors relative group ${
-                    item.active 
-                      ? 'text-[#a92d23] font-semibold' 
-                      : 'text-[#a92d23] hover:text-[#7a1f1a]'
-                  }`}
-                >
-                  {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#a92d23] to-[#f3d099] transition-all duration-300 ${
-                    item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Auth Section */}
-            <div className="flex items-center gap-3">
-              {session ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-medium">
-                    <Trophy className="w-4 h-4" />
-                    {score} koin
-                  </div>
-                  <span className="text-sm text-[#a92d23] font-medium">
-                    Hi, {session.user?.name || session.user?.email}
-                  </span>
-                  <button 
-                    onClick={() => signOut()}
-                    className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors"
-                  >
-                    Keluar
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Link 
-                    href="/register" 
-                    className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
-                  >
-                    Daftar
-                  </Link>
-                  <Link 
-                    href="/login"
-                    className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
-                  >
-                    Masuk
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
       {/* Main Content */}
       <main className="pt-28 pb-16 px-6 max-w-4xl mx-auto relative z-10">
@@ -185,7 +96,7 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-blue-600 to-[#a92d23] bg-clip-text text-transparent"
+            className="text-2xl md:text-5xl font-black mb-6 bg-[#a92d23] bg-clip-text text-transparent"
           >
             Kuis Budaya Indonesia
           </motion.h1>
@@ -209,10 +120,10 @@ export default function QuizPage() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50"
           >
             <div className="flex items-center gap-3 mb-2">
-              <Brain className="w-8 h-8 text-blue-500" />
+              <Brain className="w-8 h-8 text-[#a92d23]" />
               <h3 className="font-bold text-gray-800">Pertanyaan</h3>
             </div>
-            <p className="text-3xl font-black text-blue-600">100+</p>
+            <p className="text-3xl font-black text-[#a92d23]">100+</p>
             <p className="text-sm text-gray-600">Soal Tersedia</p>
           </motion.div>
 
@@ -223,10 +134,10 @@ export default function QuizPage() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50"
           >
             <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-8 h-8 text-yellow-500" />
+              <Trophy className="w-8 h-8 text-[#a92d23]" />
               <h3 className="font-bold text-gray-800">Reward</h3>
             </div>
-            <p className="text-3xl font-black text-yellow-600">20</p>
+            <p className="text-3xl font-black text-[#a92d23]">20</p>
             <p className="text-sm text-gray-600">Koin per Jawaban Benar</p>
           </motion.div>
 
@@ -237,10 +148,10 @@ export default function QuizPage() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50"
           >
             <div className="flex items-center gap-3 mb-2">
-              <Users className="w-8 h-8 text-green-500" />
+              <Users className="w-8 h-8 text-[#a92d23]" />
               <h3 className="font-bold text-gray-800">Peserta</h3>
             </div>
-            <p className="text-3xl font-black text-green-600">1000+</p>
+            <p className="text-3xl font-black text-[#a92d23]">1000+</p>
             <p className="text-sm text-gray-600">Pengguna Aktif</p>
           </motion.div>
         </div>

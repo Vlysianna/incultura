@@ -149,8 +149,6 @@ export default function Header() {
           onClick={() => setMobileMenuOpen(false)}
         ></div>
       )}
-
-      <LoginModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
