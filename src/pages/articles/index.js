@@ -3,9 +3,8 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X, Upload, ImageIcon } from 'lucide-react'
-import Header from '../../components/Header'
-import { FooterSection } from '../../components/sections'
+import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X } from 'lucide-react'
+import Nav from '../components/Nav'
 
 export default function Articles() {
   const { data: session } = useSession()
@@ -135,7 +134,7 @@ export default function Articles() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-amber-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white relative overflow-hidden">
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-[#f3d099]/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-1/4 h-64 bg-gradient-to-tr from-[#a92d23]/10 to-transparent rounded-tr-[80px] pointer-events-none"></div>
@@ -148,92 +147,7 @@ export default function Articles() {
         <Sparkles className="w-6 h-6 text-[#a92d23]" />
       </div>
 
-      {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                  <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
-                </h1>
-                <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {[
-                { href: "/", label: "Home" },
-                { href: "/articles", label: "Artikel", active: true },
-                { href: "/quiz", label: "Kuis" },
-                { href: "/marketplace", label: "Marketplace" },
-                { href: "/leaderboard", label: "Leaderboard" },
-                { href: "/profile", label: "Profile" },               
-              ].map((item) => (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className={`text-sm font-medium transition-colors relative group ${
-                    item.active 
-                      ? 'text-[#a92d23] font-semibold' 
-                      : 'text-[#a92d23] hover:text-[#7a1f1a]'
-                  }`}
-                >
-                  {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#a92d23] to-[#f3d099] transition-all duration-300 ${
-                    item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Auth Section */}
-            <div className="flex items-center gap-3">
-              {session ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-[#a92d23] font-medium">
-                    Hi, {session.user?.name || session.user?.email}
-                  </span>
-                  <button 
-                    onClick={() => signOut()}
-                    className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors"
-                  >
-                    Keluar
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Link 
-                    href="/register" 
-                    className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors hidden sm:block"
-                  >
-                    Daftar
-                  </Link>
-                  <Link 
-                    href="/login"
-                    className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
-                  >
-                    Masuk
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+    <Nav />
 
       {/* Main Content */}
       <main className="pt-28 pb-16 px-6 max-w-6xl mx-auto relative z-10">
@@ -263,13 +177,13 @@ export default function Articles() {
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-12">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#a92d23] w-5 h-5" />
             <input
               type="text"
               placeholder="Cari artikel atau daerah..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent bg-white/80 backdrop-blur-sm"
+              className="w-full pl-10 pr-4 py-3 text-[#a92d23] border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#a92d23] focus:border-transparent bg-white/80 backdrop-blur-sm"
             />
           </div>
 
