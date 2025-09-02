@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { User, Trophy, Activity, Calendar, Coins, Award, BookOpen, Brain, ShoppingBag, Edit, Sparkles } from 'lucide-react'
+import Header from '../../components/Header';
+import { FooterSection } from '../../components/sections';
 
 export default function Profile() {
   const { data: session } = useSession()
@@ -34,68 +36,7 @@ export default function Profile() {
         {/* Background Decoration */}
         <div className="absolute top-0 right-0 w-1/3 h-96 bg-gradient-to-bl from-[#f3d099]/20 to-transparent rounded-bl-[100px] pointer-events-none"></div>
         
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20">
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                    <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                    <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
-                  </h1>
-                  <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-                </div>
-              </Link>
-
-              <nav className="hidden md:flex items-center gap-6">
-                {[
-                  { href: "/", label: "Home" },
-                  { href: "/articles", label: "Artikel" },
-                  { href: "/quiz", label: "Kuis" },
-                  { href: "/marketplace", label: "Marketplace" },
-                  { href: "/leaderboard", label: "Leaderboard" },
-                  { href: "/profile", label: "Profile", active: true },               
-                ].map((item) => (
-                  <Link 
-                    key={item.href}
-                    href={item.href} 
-                    className={`text-sm font-medium transition-colors relative group ${
-                      item.active 
-                        ? 'text-[#a92d23] font-semibold' 
-                        : 'text-[#a92d23] hover:text-[#7a1f1a]'
-                    }`}
-                  >
-                    {item.label}
-                    <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#a92d23] to-[#f3d099] transition-all duration-300 ${
-                      item.active ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}></span>
-                  </Link>
-                ))}
-              </nav>
-
-              <div className="flex items-center gap-3">
-                <Link 
-                  href="/register" 
-                  className="text-sm font-medium text-[#a92d23] hover:text-[#7a1f1a] transition-colors"
-                >
-                  Daftar
-                </Link>
-                <button 
-                  onClick={() => signIn('credentials', { callbackUrl: '/profile' })}
-                  className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white hover:from-[#7a1f1a] hover:to-[#a92d23] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 px-4 py-2 rounded-lg text-sm font-medium"
-                >
-                  Masuk
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
+  <Header />
 
         {/* Login Required Content */}
         <main className="pt-28 pb-16 px-6 max-w-4xl mx-auto relative z-10">
@@ -125,7 +66,8 @@ export default function Profile() {
             </div>
           </motion.div>
         </main>
-      </div>
+      <FooterSection />
+    </div>
     )
   }
 

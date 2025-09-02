@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Sparkles, User } from 'lucide-react'
+import Header from '../../components/Header';
+import { FooterSection } from '../../components/sections';
 
 export default function QuizPage() {
   const { data: session } = useSession()
@@ -43,45 +45,29 @@ export default function QuizPage() {
   }, [])
 
   const submitAnswer = async () => {
-    if (!selected || answered) return
-    
-    const userId = session?.user?.id
+    if (!selected || answered) return;
+
+    const userId = session?.user?.id;
     if (!userId) {
-      setMessage('Silakan login terlebih dahulu untuk berpartisipasi')
-      return
+      setMessage('Silakan login terlebih dahulu untuk berpartisipasi');
+      return;
     }
-    
-    setLoading(true)
-    setAnswered(true)
-    
+
+    setLoading(true);
+    setAnswered(true);
+
     try {
-      const res = await fetch('/api/quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quizId: quiz.id, answer: selected, userId })
-      })
-      
-      if (!res.ok) throw new Error('Failed to submit answer')
-      
-      const result = await res.json()
-      
-      if (result.correct) {
-        setMessage('🎉 Benar! +20 koin')
-        setScore(prev => prev + 20)
-      } else {
-        setMessage('❌ Salah! Jawaban yang benar: ' + result.correctAnswer)
-      }
-      
+      // ...existing submit logic...
       setTimeout(() => {
-        setMessage('')
-        loadQuiz()
-      }, 3000)
+        setMessage('');
+        loadQuiz();
+      }, 3000);
     } catch (error) {
-      console.error('Error submitting answer:', error)
-      setMessage('Terjadi kesalahan. Silakan coba lagi.')
-      setAnswered(false)
+      console.error('Error submitting answer:', error);
+      setMessage('Terjadi kesalahan. Silakan coba lagi.');
+      setAnswered(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

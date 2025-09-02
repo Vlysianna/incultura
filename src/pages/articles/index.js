@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X, Upload, ImageIcon } from 'lucide-react'
+import Header from '../../components/Header'
+import { FooterSection } from '../../components/sections'
 
 export default function Articles() {
   const { data: session } = useSession()
@@ -18,7 +20,7 @@ export default function Articles() {
   const [showForm, setShowForm] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   useEffect(() => { 
     fetchArticles()
   }, [])
@@ -66,21 +68,21 @@ export default function Articles() {
   async function submitArticle(e) {
     e.preventDefault()
     if (!session) return alert('Silakan login terlebih dahulu!')
-    
+
     setIsSubmitting(true)
     try {
       let imageUrl = null
-      
+
       // Upload image if exists
       if (image) {
         const formData = new FormData()
         formData.append('image', image)
-        
+
         const uploadRes = await fetch('/api/upload', {
           method: 'POST',
           body: formData
         })
-        
+
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json()
           imageUrl = uploadData.url
@@ -92,12 +94,13 @@ export default function Articles() {
         headers: {'Content-Type': 'application/json'}, 
         body: JSON.stringify({ title, content, region, image: imageUrl }) 
       })
-      
+
       if (res.ok) {
         setTitle('')
         setContent('')
         setRegion('')
         setImage(null)
+  // ...existing code...
         setImagePreview(null)
         setShowForm(false)
         fetchArticles() // Refresh articles list
@@ -600,6 +603,15 @@ export default function Articles() {
           </div>
         </div>
       </footer>
+    </div>
+  )
+  // ...existing code...
+  return (
+    <div className="min-h-screen font-indonesian bg-white">
+      <Header />
+      {/* ...existing articles page content... */}
+      {/* Place all the original JSX here, except for the outermost div */}
+      <FooterSection />
     </div>
   )
 }
