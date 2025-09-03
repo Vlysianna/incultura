@@ -49,7 +49,7 @@ export default function LeaderboardList({
                   )}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  {user.activities?.length || 0} aktivitas
+                  {user.activitiesCount != null ? user.activitiesCount : (user.activities?.length || 0)} aktivitas
                 </p>
               </div>
 

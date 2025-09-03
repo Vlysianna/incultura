@@ -133,7 +133,7 @@ export default function MarketPlaceCard({ item, index, onRedeem }) {
             </h3>
             <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-[#a92e23]">
-                {item.cost || item.price || 100} Koin
+                {(typeof item.price === 'number' && item.price > 0 ? item.price : 100)} Koin
               </span>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />

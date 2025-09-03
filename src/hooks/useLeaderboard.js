@@ -13,8 +13,9 @@ export function useLeaderboard() {
         if (!response.ok) {
           throw new Error('Failed to fetch leaderboard')
         }
-        const data = await response.json()
-        setList(data || [])
+  const data = await response.json()
+  const users = Array.isArray(data) ? data : (data.users || [])
+  setList(users)
       } catch (err) {
         setError(err.message)
         setList([])
@@ -42,7 +43,7 @@ export function useLeaderboard() {
     return {
       totalUsers: list.length,
       totalCoins: list.reduce((total, user) => total + (user.coins || 0), 0),
-      totalActivities: list.reduce((total, user) => total + (user.activities?.length || 0), 0)
+      totalActivities: list.reduce((total, user) => total + (user.activitiesCount || 0), 0)
     }
   }
 

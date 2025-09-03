@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react'
 import { Trophy, Star, Zap, TrendingUp, Users, Award, Coins } from 'lucide-react'
 
 // Layout and common components
-import { AppLayout } from '../../components/layout/AppLayout'
+import AppLayout from '../../components/layout/AppLayout'
 import { 
   PageHeader, 
   StatsGrid, 

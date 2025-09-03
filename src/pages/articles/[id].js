@@ -19,6 +19,7 @@ export default function ArticleDetail() {
     title: "Kopi dan Kue",
     artist: "Masdito Bachtiar"
   })
+  const [hasRead, setHasRead] = useState(false)
 
   // Scroll navbar shadow
   useEffect(() => {
@@ -48,13 +49,18 @@ export default function ArticleDetail() {
       if (session?.user) {
         // Use localStorage to prevent duplicate notifications for the same article/user
         const coinKey = `article_coin_${id}_${session.user.id}`
-        if (!localStorage.getItem(coinKey)) {
+        const existing = localStorage.getItem(coinKey)
+        if (existing) {
+          setHasRead(true)
+        }
+        if (!existing) {
           fetch('/api/articles/view', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ articleId: id })
-          }).then(r => r.json()).then(j => {
+      }).then(r => r.json()).then(j => {
             if (j.success) {
+              setHasRead(true)
               const notification = document.createElement('div')
               notification.innerHTML = `
                 <div class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg z-50 flex items-center">
@@ -67,7 +73,12 @@ export default function ArticleDetail() {
               document.body.appendChild(notification)
               setTimeout(() => document.body.removeChild(notification), 3000)
               localStorage.setItem(coinKey, 'awarded')
+              // Trigger immediate coin update (optimistic) with award detail
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('coins:award', { detail: { awarded: j.coinsAwarded || 10, total: j.totalCoins } }))
+              }
             } else if (j.message && j.message.includes('already awarded')) {
+              setHasRead(true)
               // Show a subtle info notification if already read
               const notification = document.createElement('div')
               notification.innerHTML = `
@@ -81,6 +92,10 @@ export default function ArticleDetail() {
               document.body.appendChild(notification)
               setTimeout(() => document.body.removeChild(notification), 3000)
               localStorage.setItem(coinKey, 'already')
+              // Sync coins (no award) in case other tab updated
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('coins:update'))
+              }
             }
           }).catch((err) => { console.error('Error calling /api/articles/view', err) })
         }
@@ -169,16 +184,29 @@ export default function ArticleDetail() {
             </span>
           </div>
 
-          <h1 className="text-3xl font-bold mb-6 text-[#a92d23]">{article.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <h1 className="text-3xl font-bold text-[#a92d23]">{article.title}</h1>
+            {session?.user && hasRead && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700 border border-green-200 shadow-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Sudah Dibaca
+              </span>
+            )}
+          </div>
 
           <div className="prose max-w-none article-content" dangerouslySetInnerHTML={{ __html: article.content }} />
 
-          {session?.user && (
-            <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-[#f3d099] flex items-center">
-              <svg className="w-6 h-6 text-amber-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p className="text-amber-800">Kamu telah mendapatkan 10 koin karena telah membaca artikel ini!</p>
+          {session?.user && hasRead && (
+            <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-green-200 flex items-start gap-3">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <div className="text-sm text-green-800 leading-relaxed">
+                <p className="font-semibold">Status Bacaan Tersimpan</p>
+                <p>Kamu sudah membaca artikel ini. Terima kasih telah ikut melestarikan budaya! {`\u2728`}</p>
+              </div>
             </div>
           )}
         </motion.article>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { LoadingState, EmptyState } from '../common/LoadingStates'
+import LoadingState, { EmptyState } from '../common/LoadingStates'
 import LeaderboardPodium from './LeaderboardPodium'
 import LeaderboardList from './LeaderboardList'
 

@@ -3,7 +3,7 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X } from 'lucide-react'
+import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles, X, Upload } from 'lucide-react'
 import Nav from '../components/Nav'
 
 export default function Articles() {
@@ -517,15 +517,6 @@ export default function Articles() {
           </div>
         </div>
       </footer>
-    </div>
-  )
-  // ...existing code...
-  return (
-    <div className="min-h-screen font-indonesian bg-white">
-      <Header />
-      {/* ...existing articles page content... */}
-      {/* Place all the original JSX here, except for the outermost div */}
-      <FooterSection />
     </div>
   )
 }

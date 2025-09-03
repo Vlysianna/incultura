@@ -53,7 +53,7 @@ export default function LeaderboardPodium({ users = [] }) {
                 <span className="font-semibold text-yellow-700">{user.coins || 0}</span>
               </div>
               <div className="text-sm text-gray-600">
-                {user.activities?.length || 0} aktivitas
+                {user.activitiesCount != null ? user.activitiesCount : (user.activities?.length || 0)} aktivitas
               </div>
             </motion.div>
           )

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Sparkles, User } from 'lucide-react'
-import Nav from '../components/Nav'
+import Header from '../../components/Header'
 
 export default function QuizPage() {
   const { data: session } = useSession()
@@ -15,6 +15,16 @@ export default function QuizPage() {
   const [answered, setAnswered] = useState(false)
   const [loading, setLoading] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [category, setCategory] = useState('all')
+  const [progress, setProgress] = useState({ answered: 0, total: 0 })
+  const [finished, setFinished] = useState(false)
+  const categories = [
+    { id: 'all', label: 'Semua' },
+    { id: 'budaya', label: 'Budaya' },
+    { id: 'makanan', label: 'Makanan Daerah' },
+    { id: 'musik', label: 'Musik' },
+    { id: 'pakaian', label: 'Pakaian' },
+  ]
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -24,9 +34,17 @@ export default function QuizPage() {
 
   const loadQuiz = () => {
     setLoading(true)
-    fetch('/api/quiz')
+    const qs = category !== 'all' ? `?category=${encodeURIComponent(category)}` : ''
+    fetch(`/api/quiz${qs}`)
       .then(r => r.json())
       .then(data => {
+        if (data?.progress) setProgress(data.progress)
+        if (data?.finished) {
+          setFinished(true)
+          setQuiz(null)
+          return
+        }
+        setFinished(false)
         setQuiz(data)
         setSelected(null)
         setAnswered(false)
@@ -41,7 +59,8 @@ export default function QuizPage() {
 
   useEffect(() => { 
     loadQuiz() 
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category])
 
   const submitAnswer = async () => {
     if (!selected || answered) return;
@@ -56,11 +75,39 @@ export default function QuizPage() {
     setAnswered(true);
 
     try {
-      // ...existing submit logic...
+      const resp = await fetch('/api/quiz', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ quizId: quiz.id, answer: selected })
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        setMessage(data.error || 'Jawaban gagal diproses')
+        setAnswered(false)
+        return
+      }
+      if (data.alreadyAnswered) {
+        setMessage(data.correct ? 'Kuis ini sudah pernah kamu jawab benar.' : 'Kuis ini sudah kamu jawab.')
+        return
+      }
+      if (data.correct) {
+        setScore(prev => prev + 1)
+        setMessage('Benar! Kamu mendapatkan 20 koin 🎉')
+        if (data.awarded > 0) {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('coins:award', { detail: { awarded: data.awarded, total: data.totalCoins } }))
+          } else {
+            window.dispatchEvent(new Event('coins:update'))
+          }
+        }
+      } else {
+        setMessage(`Salah. Jawaban benar: ${data.correctAnswer}`)
+      }
+      setProgress(p => ({ ...p, answered: Math.min(p.answered + 1, p.total) }))
       setTimeout(() => {
-        setMessage('');
-        loadQuiz();
-      }, 3000);
+        setMessage('')
+        loadQuiz()
+      }, 3000)
     } catch (error) {
       console.error('Error submitting answer:', error);
       setMessage('Terjadi kesalahan. Silakan coba lagi.');
@@ -84,13 +131,13 @@ export default function QuizPage() {
         <Sparkles className="w-6 h-6 text-[#a92d23]" />
       </div>
 
-      {/* Header */}
-      <Nav />
+  {/* Header (Unified) */}
+  <Header />
 
       {/* Main Content */}
       <main className="pt-28 pb-16 px-6 max-w-4xl mx-auto relative z-10">
         
-        {/* Hero Section */}
+  {/* Hero Section */}
         <div className="text-center mb-16">
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
@@ -111,6 +158,17 @@ export default function QuizPage() {
           </motion.p>
         </div>
 
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2 justify-center mb-10">
+          {categories.map(c => (
+            <button
+              key={c.id}
+              onClick={() => setCategory(c.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium border transition ${category === c.id ? 'bg-[#a92d23] text-white border-[#a92d23]' : 'bg-white/70 border-gray-200 hover:border-[#a92d23]/40 text-gray-700'}`}
+            >{c.label}</button>
+          ))}
+        </div>
+
         {/* Quiz Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <motion.div 
@@ -123,8 +181,8 @@ export default function QuizPage() {
               <Brain className="w-8 h-8 text-[#a92d23]" />
               <h3 className="font-bold text-gray-800">Pertanyaan</h3>
             </div>
-            <p className="text-3xl font-black text-[#a92d23]">100+</p>
-            <p className="text-sm text-gray-600">Soal Tersedia</p>
+            <p className="text-3xl font-black text-[#a92d23]">{progress.total || 0}</p>
+            <p className="text-sm text-gray-600">Total Soal</p>
           </motion.div>
 
           <motion.div 
@@ -151,14 +209,30 @@ export default function QuizPage() {
               <Users className="w-8 h-8 text-[#a92d23]" />
               <h3 className="font-bold text-gray-800">Peserta</h3>
             </div>
-            <p className="text-3xl font-black text-[#a92d23]">1000+</p>
-            <p className="text-sm text-gray-600">Pengguna Aktif</p>
+            <p className="text-3xl font-black text-[#a92d23]">{progress.answered}</p>
+            <p className="text-sm text-gray-600">Sudah Dijawab</p>
           </motion.div>
         </div>
 
         {/* Quiz Section */}
         <AnimatePresence mode="wait">
-          {loading ? (
+          {finished ? (
+            <motion.div
+              key="finished"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-lg border border-white/50 text-center"
+            >
+              <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Semua kuis selesai!</h3>
+              <p className="text-gray-600 mb-6">Kamu telah menjawab semua pertanyaan yang tersedia untuk kategori ini.</p>
+              <button
+                onClick={() => { setCategory('all'); }}
+                className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white px-6 py-3 rounded-xl hover:scale-105 transition-all shadow-lg"
+              >Reset Kategori</button>
+            </motion.div>
+          ) : loading ? (
             <motion.div 
               key="loading"
               initial={{ opacity: 0 }}

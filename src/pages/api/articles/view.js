@@ -4,7 +4,8 @@ import getServerUser from '../../../../lib/getServerUser'
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
   
-  const user = await getServerUser(req)
+  // Need both req & res for getServerSession to work correctly
+  const user = await getServerUser(req, res)
   if (!user) return res.status(401).json({ error: 'Authentication required' })
   
   const { articleId } = req.body
@@ -24,7 +25,9 @@ export default async function handler(req, res) {
     })
 
     if (existingActivity) {
-      return res.json({ success: false, message: 'Coins already awarded for this article.' })
+      // Return current coin total so client can still sync UI
+      const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { coins: true } })
+      return res.json({ success: false, message: 'Coins already awarded for this article.', totalCoins: currentUser?.coins ?? null })
     }
 
     // Award coins (10)

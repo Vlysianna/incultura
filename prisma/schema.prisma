@@ -49,6 +49,7 @@ model quiz {
   question      String
   options       String
   correctAnswer String
+  category      String    @default("general")
   createdAt     DateTime? @default(now()) @db.DateTime(0)
 }
 
