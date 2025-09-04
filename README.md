@@ -2,6 +2,8 @@
 
 This project is a Next.js app (App Router + some /src/pages APIs) implementing a simple gamification flow: users read articles, participate in quizzes, earn coins, and redeem merchandise.
 
+For detailed project analysis and documentation, please see [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md).
+
 Quick setup (local):
 
 1. Install deps
