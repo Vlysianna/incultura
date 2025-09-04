@@ -34,9 +34,19 @@ export function useLeaderboard() {
   }
 
   const filterUsers = (filter) => {
-    if (filter === 'all') return list
-    // Add filter logic here based on user activities
-    return list
+    if (!filter || filter === 'all') return list
+
+    // filter values: 'quiz', 'articles', 'marketplace'
+    switch (filter) {
+      case 'quiz':
+        return list.filter(u => (u.quizCount || 0) > 0)
+      case 'articles':
+        return list.filter(u => (u.articleCount || 0) > 0)
+      case 'marketplace':
+        return list.filter(u => (u.redeemCount || 0) > 0)
+      default:
+        return list
+    }
   }
 
   const getTotalStats = () => {

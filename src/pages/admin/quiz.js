@@ -1,3 +1,5 @@
+import { FooterSection } from '../../components/sections';
+
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -330,7 +332,7 @@ export default function AdminQuiz(){
 
         {/* New Quiz Form Modal */}
         {showNewQuizForm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -359,21 +361,8 @@ export default function AdminQuiz(){
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-8">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Shield className="w-5 h-5" />
-            <h3 className="text-lg font-semibold">Incultura Admin Panel</h3>
-          </div>
-          <p className="text-white/80">
-            Kelola platform budaya Indonesia dengan bijak dan bertanggung jawab
-          </p>
-          <div className="border-t border-white/20 mt-4 pt-4 text-white/60 text-sm">
-            &copy; {new Date().getFullYear()} Incultura Admin. All rights reserved.
-          </div>
-        </div>
-      </footer>
+  {/* Footer */}
+  <FooterSection />
     </div>
   )
 }

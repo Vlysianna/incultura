@@ -139,6 +139,7 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
               {[
+                { href: "/", label: "Home" },
                 { href: "/articles", label: "Artikel" },
                 { href: "/quiz", label: "Kuis" },
                 { href: "/marketplace", label: "Marketplace" },
@@ -263,22 +264,9 @@ export default function Header() {
                           <span className="absolute -top-3 right-0 text-green-600 text-xs font-bold animate-bounce">{coinDelta}</span>
                         )}
                       </div>
-                      <Link
-                        href="/profile"
-                        onClick={handleLinkClick}
-                        className="text-sm text-[#a92d23] hover:text-[#7a1f1a] font-medium truncate max-w-[140px] underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-[#a92d23]/40 rounded"
-                      >
-                        {session.user?.name || session.user?.email}
-                      </Link>
+                      <div className="text-sm text-[#a92d23] font-medium truncate max-w-[140px]">{session.user?.name || session.user?.email}</div>
                     </div>
-                    <Link
-                      href="/profile"
-                      onClick={handleLinkClick}
-                      className="w-full text-left text-sm font-medium py-2 text-[#a92d23] hover:text-[#7a1f1a] flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z"/><path d="M4 20c0-2.67 3.58-4 8-4s8 1.33 8 4"/></svg>
-                      Profil
-                    </Link>
+                    {/* profile accessible from avatar dropdown on desktop; mobile shows name only */}
                     <button
                       onClick={() => { signOut(); handleLinkClick(); }}
                       className="w-full text-left text-sm font-medium py-2 text-[#a92d23] hover:text-[#7a1f1a]"

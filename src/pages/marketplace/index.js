@@ -2,15 +2,14 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Heart, ShoppingCart, Eye, Filter, Search, MapPin, RefreshCw, AlertCircle, Sparkles, X, Landmark, Palette, Pin, Shirt, Amphora } from 'lucide-react'
-import Nav from '../components/Nav';
+import Header from '../../components/Header';
 import MarketPlaceCard from '../../components/MarketplaceCard';
-import Footer from '../components/ui/Footer';
+import { FooterSection } from '../../components/sections';
 
 export default function MarketplacePage() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [activeFilter, setActiveFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [mounted, setMounted] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -53,22 +52,14 @@ export default function MarketplacePage() {
     }
   }
 
-  // Filter items berdasarkan kategori dan pencarian
+  // Filter items berdasarkan pencarian saja (kategori dihilangkan)
   const filteredItems = items.filter(item => {
-    const matchesCategory = activeFilter === 'all' || (item.category && item.category === activeFilter)
     const matchesSearch = item.name && (
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
     )
-    return matchesCategory && matchesSearch
+    return matchesSearch
   })
-
-  const categories = [
-    { id: 'all', name: 'Semua', icon: <Landmark className="w-6 h-6" /> },
-    { id: 'batik', name: 'Batik', icon: <Palette className="w-6 h-6" /> },
-    { id: 'pin', name: 'Pin', icon: <Pin className='w-6 h-6' /> },
-    { id: 'pakaian', name: 'Pakaian', icon: <Shirt className='w-6 h-6' /> },
-  ]
 
   const popularSearches = [
     'Pin Wayang',
@@ -79,7 +70,7 @@ export default function MarketplacePage() {
 
   return (
     <>
-      <Nav />
+  <Header />
       <div className="min-h-screen bg-gradient-to-br from-[#f3d099] via-[#f9e6c9] to-[#f3d099] relative overflow-hidden pt-20">
 
         {/* Floating Batik Patterns - Responsive */}
@@ -285,60 +276,7 @@ export default function MarketplacePage() {
                 </div>
 
                 {/* Modern Categories Filter */}
-                <div className="space-y-3 md:space-y-4">
-                  <div className="flex items-center justify-center gap-1 md:gap-2 mb-3 md:mb-4">
-                    <div className="w-4 md:w-8 h-0.5 bg-gradient-to-r from-transparent to-[#a92e23]/50 rounded-full"></div>
-                    <span className="text-xs md:text-sm font-medium text-gray-600 px-2 md:px-3">Kategori Produk</span>
-                    <div className="w-4 md:w-8 h-0.5 bg-gradient-to-l from-transparent to-[#a92e23]/50 rounded-full"></div>
-                  </div>
-
-                  {/* Mobile Filter Toggle */}
-                  <div className="sm:hidden flex justify-center mb-4">
-                    <button
-                      onClick={() => setShowMobileFilters(!showMobileFilters)}
-                      className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-[#a92e23]/30 text-[#a92e23] px-4 py-2 rounded-lg font-medium shadow-md"
-                    >
-                      <Filter className="w-4 h-4" />
-                      {showMobileFilters ? 'Sembunyikan Filter' : 'Tampilkan Filter'}
-                    </button>
-                  </div>
-
-                  {/* Categories Grid */}
-                  <div className={`flex flex-wrap justify-center gap-2 md:gap-3 ${showMobileFilters ? 'block' : 'hidden sm:flex'}`}>
-                    {categories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => {
-                          setActiveFilter(category.id)
-                          setShowMobileFilters(false)
-                        }}
-                        className={`group relative overflow-hidden rounded-xl md:rounded-2xl py-3 px-6 md:py-4 md:px-8 lg:px-10 transition-all duration-500 hover:scale-105 cursor-pointer ${activeFilter === category.id
-                          ? 'bg-gradient-to-br from-[#a92e23] via-[#a92e23] to-amber-600 text-white shadow-xl md:shadow-2xl scale-105'
-                          : 'bg-white/70 hover:bg-white/90 text-gray-700 border border-gray-200/50 hover:border-[#a92e23]/30 shadow-md hover:shadow-lg'
-                          }`}
-                      >
-                        {/* Background Glow Effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-br from-[#a92e23]/20 to-amber-500/20 rounded-xl md:rounded-2xl blur-lg md:blur-xl transition-opacity duration-300 ${activeFilter === category.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-30 text-white'
-                          }`}></div>
-
-                        {/* Content */}
-                        <div className="relative flex flex-col items-center gap-1 md:gap-2">
-                          <span className={`text-xl md:text-2xl transform transition-transform duration-300 group-hover:scale-110 text-[#a92e23] ${activeFilter === category.id ? 'text-white' : ''}`}>
-                            {category.icon}
-                          </span>
-                          <span className="text-xs md:text-sm font-medium text-center leading-tight">
-                            {category.name}
-                          </span>
-
-                          {/* Active Indicator */}
-                          {activeFilter === category.id && (
-                            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                {/* Categories removed (backend doesn't provide categories) */}
               </div>
 
               {/* Floating Elements */}
@@ -424,13 +362,10 @@ export default function MarketplacePage() {
                   Produk yang Anda cari belum tersedia. Coba gunakan filter yang berbeda atau kembali lagi nanti.
                 </p>
                 <button
-                  onClick={() => {
-                    setActiveFilter('all')
-                    setSearchQuery('')
-                  }}
+                  onClick={() => setSearchQuery('')}
                   className="bg-[#a92e23] text-white px-4 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl hover:bg-[#a92e23]/90 transition-colors duration-300 cursor-pointer text-sm md:text-base"
                 >
-                  Reset Filter
+                  Reset
                 </button>
               </motion.div>
             )}
@@ -462,28 +397,59 @@ export default function MarketplacePage() {
           {/* Decorative bottom border */}
           <div className="relative">
             <div className="absolute bottom-0 left-0 right-0 h-1 md:h-2 bg-gradient-to-r from-[#a92e23] via-[#f3d099] to-[#a92e23]"></div>
-            <div className="absolute bottom-1 md:bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 md:gap-2">
-              {[1, 2, 3, 4, 5].map(i => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#a92e23] rounded-full"
-                />
-              ))}
-            </div>
+            {/* decorative dots removed on user request */}
+          </div>
+          {/* Wave transition filler (static) - matches FooterSection wave mask to smooth visual join */}
+          <div className="relative z-0">
+            <div
+              className="absolute bottom-0 left-0 w-full h-[100px] rotate-0"
+              style={{
+                backgroundColor: '#f3d099',
+                WebkitMaskImage: "url('/wave.png')",
+                WebkitMaskRepeat: 'repeat-x',
+                WebkitMaskSize: '1000px 100px',
+                WebkitMaskPositionX: `0px`,
+                maskImage: "url('/wave.png')",
+                maskRepeat: 'repeat-x',
+                maskSize: '1000px 100px',
+                maskPositionX: `0px`,
+                opacity: 0.7,
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-full h-[100px] rotate-0"
+              style={{
+                backgroundColor: '#f3d099',
+                WebkitMaskImage: "url('/wave.png')",
+                WebkitMaskRepeat: 'repeat-x',
+                WebkitMaskSize: '1000px 100px',
+                WebkitMaskPositionX: `0px`,
+                maskImage: "url('/wave.png')",
+                maskRepeat: 'repeat-x',
+                maskSize: '1000px 100px',
+                maskPositionX: `0px`,
+                opacity: 0.5,
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-full h-[100px] rotate-0"
+              style={{
+                backgroundColor: '#f3d099',
+                WebkitMaskImage: "url('/wave.png')",
+                WebkitMaskRepeat: 'repeat-x',
+                WebkitMaskSize: '1000px 100px',
+                WebkitMaskPositionX: `0px`,
+                maskImage: "url('/wave.png')",
+                maskRepeat: 'repeat-x',
+                maskSize: '1000px 100px',
+                maskPositionX: `0px`,
+                opacity: 0.3,
+              }}
+            />
           </div>
         </div>
-      </div>
-      <Footer />
+  </div>
+  <FooterSection />
     </>
   )
 }

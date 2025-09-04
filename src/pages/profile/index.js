@@ -18,6 +18,7 @@ export default function Profile() {
   const [editFile, setEditFile] = useState(null)
   const [editLoading, setEditLoading] = useState(false)
   const [editError, setEditError] = useState('')
+  const [articleTitles, setArticleTitles] = useState({})
   const nameInputRef = useRef(null)
 
   useEffect(() => {
@@ -40,6 +41,29 @@ export default function Profile() {
           articles: data.article || []
         }
         setU(normalized)
+
+        // Preload article titles for activities of type 'article_view'
+        try {
+          const articleIds = Array.from(new Set((normalized.activities || [])
+            .filter(a => a.type === 'article_view' && a.detail)
+            .map(a => String(a.detail))))
+          if (articleIds.length > 0) {
+            const map = {}
+            await Promise.all(articleIds.map(async (id) => {
+              try {
+                const res = await fetch(`/api/articles/${id}`)
+                if (!res.ok) return
+                const art = await res.json()
+                if (art && art.id) map[String(id)] = art.title || art.title || `Artikel ${id}`
+              } catch (e) {
+                // ignore individual fetch errors
+              }
+            }))
+            setArticleTitles(map)
+          }
+        } catch (err) {
+          // ignore
+        }
       } catch (e) {
         console.error('Load profile failed', e)
       } finally {
@@ -415,7 +439,12 @@ export default function Profile() {
                   
                   <div className="flex-1">
                     <p className="font-medium text-gray-800 capitalize">
-                      {activity.type.replace(/_/g,' ')} — {activity.detail || activity.description || 'Aktivitas'}
+                      {activity.type === 'article_view' ? (
+                        // show the article title when available, fallback to id/detail
+                        (articleTitles[String(activity.detail)] ? articleTitles[String(activity.detail)] : (activity.detail ? `Artikel ${activity.detail}` : activity.description || 'Artikel'))
+                      ) : (
+                        `${activity.type.replace(/_/g,' ')} — ${activity.detail || activity.description || 'Aktivitas'}`
+                      )}
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(activity.createdAt).toLocaleDateString('id-ID', {
@@ -462,41 +491,8 @@ export default function Profile() {
         </motion.div>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <Image src="/InculturaLogo.svg" alt="logo" width={32} height={32} />
-                <h3 className="text-xl font-bold">Incultura</h3>
-              </div>
-              <p className="text-white/80 leading-relaxed">
-                Platform digital untuk melestarikan dan mengenalkan kekayaan budaya Indonesia kepada generasi muda melalui teknologi modern.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Menu</h4>
-              <div className="space-y-2 text-white/80">
-                <Link href="/" className="block hover:text-white transition-colors">Home</Link>
-                <Link href="/articles" className="block hover:text-white transition-colors">Artikel</Link>
-                <Link href="/quiz" className="block hover:text-white transition-colors">Kuis</Link>
-                <Link href="/marketplace" className="block hover:text-white transition-colors">Marketplace</Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Kontak</h4>
-              <div className="space-y-2 text-white/80">
-                <p>info@incultura.id</p>
-                <p>+62 21 1234 5678</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-white/20 mt-8 pt-8 text-center text-white/60">
-            &copy; {new Date().getFullYear()} Incultura. Semua Hak Dilindungi.
-          </div>
-        </div>
-      </footer>
+  {/* Footer */}
+  <FooterSection />
     </div>
   )
 }

@@ -58,7 +58,7 @@ export default function ArticlePreview() {
         </div>
         {article.image && (
           <div className="mb-6">
-            <Image src={article.image} alt={article.title} width={600} height={300} className="rounded-xl object-cover w-full h-64" />
+            <Image src={typeof article.image === 'string' && article.image.startsWith('data:') ? article.image : (typeof article.image === 'string' ? encodeURI(article.image) : article.image)} alt={article.title} width={600} height={300} className="rounded-xl object-cover w-full h-64" />
           </div>
         )}
         <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: article.content }} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 const LoginPage = () => {
@@ -231,13 +231,48 @@ const LoginPage = () => {
             setError(null);
             try {
               const res = await signIn('credentials', { redirect: false, email, password });
-              setLoading(false);
               if (res?.error) {
+                setLoading(false);
                 setError(res.error || 'Gagal masuk. Periksa kembali kredensial Anda.');
                 return;
               }
-              // success
-              router.push('/');
+
+              // helper: try to get session a few times since session creation can be async
+              const getSessionWithRetry = async (attempts = 6, delay = 200) => {
+                for (let i = 0; i < attempts; i++) {
+                  const s = await getSession();
+                  if (s && s.user && s.user.id) return s;
+                  await new Promise(r => setTimeout(r, delay));
+                }
+                return null;
+              };
+
+              const session = await getSessionWithRetry();
+              if (!session || !session.user) {
+                // fallback: navigate to home if session couldn't be retrieved
+                setLoading(false);
+                router.push('/');
+                return;
+              }
+
+              // fetch profile to get authoritative isAdmin flag
+              try {
+                const profileRes = await fetch(`/api/profile?userId=${session.user.id}`);
+                const profileData = await profileRes.json();
+                const isAdmin = !!profileData?.isAdmin || !!profileData?.user?.isAdmin || !!profileData?.is_admin;
+                setLoading(false);
+                if (isAdmin) {
+                  router.push('/admin');
+                } else {
+                  router.push('/');
+                }
+                return;
+              } catch (pfErr) {
+                // if profile fetch fails, just go to homepage
+                setLoading(false);
+                router.push('/');
+                return;
+              }
             } catch (err) {
               setLoading(false);
               setError('Terjadi kesalahan saat mencoba masuk.');

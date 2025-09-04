@@ -1,3 +1,5 @@
+import { FooterSection } from '../../components/sections';
+
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -353,7 +355,7 @@ export default function AdminMerchandise(){
                   <div className="relative h-48 bg-gradient-to-br from-[#f3d099]/20 to-[#a92d23]/20">
                     {item.image ? (
                       <Image
-                        src={item.image.startsWith('/') ? item.image : '/' + item.image}
+                        src={item.image.startsWith('data:') ? item.image : encodeURI(item.image.startsWith('/') ? item.image : `/${item.image}`)}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -434,7 +436,7 @@ export default function AdminMerchandise(){
 
         {/* Edit Item Modal */}
         {editingItem && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -455,8 +457,15 @@ export default function AdminMerchandise(){
                   item={editingItem} 
                   onChange={setEditingItem}
                   onSave={() => handleSaveItem(editingItem)}
-                  onCancel={() => setEditingItem(null)}
+                  onCancel={() => {
+                    setEditingItem(null)
+                    setImageFile(null)
+                    setImagePreview('')
+                  }}
                   categories={categories}
+                  setImageFile={setImageFile}
+                  setImagePreview={setImagePreview}
+                  imagePreview={imagePreview}
                 />
               </div>
             </motion.div>
@@ -465,7 +474,7 @@ export default function AdminMerchandise(){
 
         {/* New Item Form Modal */}
         {showNewItemForm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -486,8 +495,15 @@ export default function AdminMerchandise(){
                   item={newItem} 
                   onChange={setNewItem}
                   onSave={() => handleSaveItem(newItem)}
-                  onCancel={() => setShowNewItemForm(false)}
+                  onCancel={() => {
+                    setShowNewItemForm(false)
+                    setImageFile(null)
+                    setImagePreview('')
+                  }}
                   categories={categories}
+                  setImageFile={setImageFile}
+                  setImagePreview={setImagePreview}
+                  imagePreview={imagePreview}
                 />
               </div>
             </motion.div>
@@ -495,27 +511,14 @@ export default function AdminMerchandise(){
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-8">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Shield className="w-5 h-5" />
-            <h3 className="text-lg font-semibold">Incultura Admin Panel</h3>
-          </div>
-          <p className="text-white/80">
-            Kelola platform budaya Indonesia dengan bijak dan bertanggung jawab
-          </p>
-          <div className="border-t border-white/20 mt-4 pt-4 text-white/60 text-sm">
-            &copy; {new Date().getFullYear()} Incultura Admin. All rights reserved.
-          </div>
-        </div>
-      </footer>
+  {/* Footer */}
+  <FooterSection />
     </div>
   )
 }
 
 // Merchandise Form Component
-function MerchandiseForm({ item, onChange, onSave, onCancel, categories }) {
+function MerchandiseForm({ item, onChange, onSave, onCancel, categories, setImageFile, setImagePreview, imagePreview }) {
   const [localImageFile, setLocalImageFile] = useState(null)
   const [localImagePreview, setLocalImagePreview] = useState(item.image ? item.image : '')
 
@@ -523,14 +526,18 @@ function MerchandiseForm({ item, onChange, onSave, onCancel, categories }) {
   useEffect(() => {
     if (localImageFile) {
       const reader = new FileReader()
-      reader.onload = e => setLocalImagePreview(e.target.result)
+      reader.onload = e => {
+        setLocalImagePreview(e.target.result)
+        setImagePreview(e.target.result)
+      }
       reader.readAsDataURL(localImageFile)
+      setImageFile(localImageFile)
     } else if (item.image) {
       setLocalImagePreview(item.image)
     } else {
       setLocalImagePreview('')
     }
-  }, [localImageFile, item.image])
+  }, [localImageFile, item.image, setImageFile, setImagePreview])
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -606,7 +613,7 @@ function MerchandiseForm({ item, onChange, onSave, onCancel, categories }) {
                 <Image src={localImagePreview} alt="Preview" width={128} height={128} className="w-32 h-32 object-cover rounded-xl border mt-2" />
               ) : (
                 <Image
-                  src={localImagePreview.startsWith('/') ? localImagePreview : '/' + localImagePreview}
+                  src={typeof localImagePreview === 'string' ? encodeURI(localImagePreview.startsWith('/') ? localImagePreview : `/${localImagePreview}`) : localImagePreview}
                   alt="Preview"
                   width={128}
                   height={128}

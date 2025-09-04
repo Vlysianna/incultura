@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import Nav from '../components/Nav'
+import { FooterSection } from '../../components/sections'
 
 export default function ArticleDetail() {
   const router = useRouter()
@@ -117,27 +118,7 @@ export default function ArticleDetail() {
 
   if (!article) return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      {/* Navbar */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-[#f3d099]/20'
-        : 'bg-transparent'
-        }`}>
-        {/* Logo Section */}
-                  <Link href="/" className="flex items-center gap-3 group">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#a92d23] to-[#f3d099] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                        <Image src="/InculturaLogo.svg" alt="logo" width={24} height={24} />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-[#f3d099] to-[#a92d23] rounded-full animate-pulse-slow"></div>
-                    </div>
-                    <div>
-                      <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#a92d23] to-[#f3d099] bg-clip-text text-transparent">
-                        <Image src="/InculturaTeks.svg" alt="logo" width={100} height={20} />
-                      </h1>
-                      <p className="text-xs text-[#a92d23] font-medium">Digitalisasi Budaya Indonesia</p>
-                    </div>
-                  </Link>
-      </header>
+      <Nav />
       <main className="pt-28 pb-12 px-6 max-w-4xl mx-auto">
         <div className="text-center py-16">
           <div className="animate-pulse bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -148,6 +129,7 @@ export default function ArticleDetail() {
           <p className="text-gray-600">Memuat artikel...</p>
         </div>
       </main>
+  <FooterSection />
     </div>
   )
 
@@ -265,14 +247,7 @@ export default function ArticleDetail() {
         </button>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-[#a92d23] to-[#7a1f1a] text-white py-2 px-6 mt-6 bottom-0">
-        <div className="mt-12 py-2 text-center">
-          <p className="text-[#f3d099]">
-            © {new Date().getFullYear()} Incultura. Hak Cipta Dilindungi.
-          </p>
-        </div>
-      </footer>
+  <FooterSection />
 
       <style jsx>{`
         .article-content {

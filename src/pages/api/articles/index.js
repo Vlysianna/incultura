@@ -19,7 +19,10 @@ export default async function handler(req, res) {
         include: { user: { select: { id: true, name: true, email: true } } },
         orderBy: { createdAt: 'desc' }
       })
-      return res.json(articles)
+
+      // Map `user` relation to `author` to keep response shape consistent with frontend expectations
+      const mapped = articles.map(a => ({ ...a, author: a.user }))
+      return res.json(mapped)
     }
     if (req.method === 'POST') {
       const user = await getServerUser(req, res)

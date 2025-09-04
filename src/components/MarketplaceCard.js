@@ -72,12 +72,7 @@ export default function MarketPlaceCard({ item, index, onRedeem }) {
           {/* Overlay dengan motif batik */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
-          {/* Category badge */}
-          <div className="absolute top-3 left-3">
-            <span className="bg-[#a92e23]/90 text-white px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-              {item.category?.toUpperCase() || "BUDAYA"}
-            </span>
-          </div>
+          {/* Category badge removed (backend has no categories) */}
 
           {/* Like button */}
           <motion.button

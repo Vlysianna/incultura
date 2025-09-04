@@ -24,6 +24,15 @@ export default async function handler(req, res) {
       }
     })
 
+    // Ensure article exists and is approved before awarding coins
+    const article = await prisma.article.findUnique({ where: { id: parsedArticleId }, select: { status: true } })
+    if (!article) return res.status(404).json({ error: 'article not found' })
+    if (article.status !== 'APPROVED') {
+      // Don't award coins for pending/rejected articles. Return current total so client can sync UI.
+      const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { coins: true } })
+      return res.json({ success: false, message: 'Article not approved. No coins awarded.', totalCoins: currentUser?.coins ?? null })
+    }
+
     if (existingActivity) {
       // Return current coin total so client can still sync UI
       const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { coins: true } })

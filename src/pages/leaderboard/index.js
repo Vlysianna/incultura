@@ -3,7 +3,8 @@ import { useSession } from 'next-auth/react'
 import { Trophy, Star, Zap, TrendingUp, Users, Award, Coins } from 'lucide-react'
 
 // Layout and common components
-import AppLayout from '../../components/layout/AppLayout'
+import Header from '../../components/Header'
+import { FooterSection } from '../../components/sections'
 import { 
   PageHeader, 
   StatsGrid, 
@@ -84,30 +85,32 @@ export default function Leaderboard() {
   }
 
   return (
-    <AppLayout>
+    <>
+      <Header />
       <FloatingElements />
-      
+
       {/* Main Content */}
-      <div className="pb-16 px-6 max-w-6xl mx-auto relative z-10">
-        
+      <div className="pt-28 pb-16 px-6 max-w-6xl mx-auto relative z-10">
         <PageHeader {...pageHeader} />
-        
+
         <StatsGrid stats={statsData} />
-        
+
         <FilterTabs 
           tabs={filterTabs}
           activeFilter={filter}
           onFilterChange={setFilter}
         />
-        
+
         <LeaderboardTable 
           users={filteredList}
           loading={loading}
           currentUserId={session?.user?.id}
         />
-        
+
         <CallToAction {...callToActionData} />
       </div>
-    </AppLayout>
+
+      <FooterSection />
+    </>
   )
 }
