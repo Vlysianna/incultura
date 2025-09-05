@@ -5,6 +5,7 @@ import { Star, Heart, ShoppingCart, Eye, Filter, Search, MapPin, RefreshCw, Aler
 import Header from '../../components/Header';
 import MarketPlaceCard from '../../components/MarketplaceCard';
 import { FooterSection } from '../../components/sections';
+import BackgroundDecorator from '../../components/common/BackgroundDecorator';
 
 export default function MarketplacePage() {
   const [items, setItems] = useState([])
@@ -62,8 +63,13 @@ export default function MarketplacePage() {
   })
 
   const popularSearches = [
-    'Pin Wayang',
-    'Syal Batik',
+    'Songket Palembang',
+    'Batik Solo', 
+    'Tenun Ikat',
+    'Keris Jawa',
+    'Tapis Lampung',
+    'Ulos Batak',
+    'Anyaman Pandan'
   ];
 
   if (!mounted) return null
@@ -73,71 +79,12 @@ export default function MarketplacePage() {
   <Header />
       <div className="min-h-screen bg-gradient-to-br from-[#f3d099] via-[#f9e6c9] to-[#f3d099] relative overflow-hidden pt-20">
 
-        {/* Floating Batik Patterns - Responsive */}
-        <div className="fixed inset-0 pointer-events-none">
-          {/* Large floating batik motif */}
-          <motion.div
-            animate={{
-              rotate: [0, 360],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="absolute top-20 left-10 w-20 h-20 md:w-32 md:h-32 opacity-5"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <g fill="#a92e23">
-                <circle cx="50" cy="50" r="40" />
-                <circle cx="50" cy="30" r="15" fill="#f3d099" />
-                <circle cx="35" cy="60" r="10" fill="#f3d099" />
-                <circle cx="65" cy="60" r="10" fill="#f3d099" />
-                <path d="M20,20 Q50,10 80,20 Q90,50 80,80 Q50,90 20,80 Q10,50 20,20" fill="none" stroke="#f3d099" strokeWidth="3" />
-              </g>
-            </svg>
-          </motion.div>
-
-          {/* Medium floating elements */}
-          <motion.div
-            animate={{
-              y: [0, -20, 0],
-              x: [0, 10, 0]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute top-1/3 right-4 md:right-16 w-16 h-16 md:w-24 md:h-24 opacity-10"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <path d="M50,10 L70,40 L90,30 L70,60 L90,70 L70,60 L50,90 L30,60 L10,70 L30,60 L10,30 L30,40 Z"
-                fill="#a92e23" />
-            </svg>
-          </motion.div>
-
-          {/* Small floating patterns */}
-          <motion.div
-            animate={{
-              rotate: [0, -360],
-              y: [0, 15, 0]
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="absolute bottom-32 left-1/4 w-12 h-12 md:w-16 md:h-16 opacity-8"
-          >
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <rect x="20" y="20" width="60" height="60" fill="#a92e23" rx="10" />
-              <circle cx="50" cy="50" r="20" fill="#f3d099" />
-              <circle cx="50" cy="50" r="8" fill="#a92e23" />
-            </svg>
-          </motion.div>
-        </div>
+        {/* Indonesian Cultural Background Decorations */}
+        <BackgroundDecorator 
+          theme="warm" 
+          density="medium" 
+          animated={true}
+        />
 
         <div className="relative z-10">
           {/* Hero Header dengan ornamen Jawa */}
@@ -166,12 +113,12 @@ export default function MarketplacePage() {
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, duration: 0.6 }}
-                  className="text-3xl md:text-5xl lg:text-7xl font-bold mb-2 md:mb-4 text-[#a92e23] relative"
+                  className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 text-[#a92e23] relative"
                   style={{ fontFamily: 'serif' }}
                 >
-                  ꦥꦱꦂ ꦧꦸꦢꦪ ꦗꦮ
-                  <div className="text-xl md:text-2xl lg:text-3xl mt-7 md:mt-20 text-gray-700 font-normal">
-                    Pasar Budaya Jawa
+                  🇮🇩 Pasar Budaya Nusantara
+                  <div className="text-lg md:text-xl lg:text-2xl mt-3 md:mt-4 text-gray-700 font-normal">
+                    Marketplace Kerajinan Tradisional Indonesia
                   </div>
                 </motion.h1>
 
@@ -181,8 +128,8 @@ export default function MarketplacePage() {
                   transition={{ delay: 0.6, duration: 0.6 }}
                   className="text-base md:text-lg text-gray-700 max-w-3xl mx-auto mb-6 md:mb-8 leading-relaxed px-2 md:px-0"
                 >
-                  Lestarikan warisan nenek moyang melalui karya seni tradisional yang memukau.
-                  Setiap produk membawa cerita dan filosofi mendalam dari tanah Jawa.
+                  Dari Sabang sampai Merauke, temukan kerajinan tangan autentik dari seluruh Nusantara.
+                  Setiap produk merupakan karya seni yang menggambarkan kekayaan budaya Indonesia.
                 </motion.p>
               </div>
             </div>
@@ -206,11 +153,11 @@ export default function MarketplacePage() {
                   <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3">
                     <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-[#a92e23] animate-pulse" />
                     <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#a92e23] to-amber-600 bg-clip-text text-transparent">
-                      Tukarkan Koinmu di Pasar Budaya
+                      Koleksi Kerajinan Nusantara 🇮🇩
                     </h2>
                     <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-amber-500 animate-pulse" />
                   </div>
-                  <p className="text-gray-600 text-xs md:text-sm">Tidak Mendapatkan Koin? Baca Artikel Untuk Mendapatkan Koin</p>
+                  <p className="text-gray-600 text-xs md:text-sm">Tukarkan koin dengan kerajinan autentik dari seluruh Indonesia</p>
                 </div>
 
                 {/* Enhanced Search Bar */}
@@ -229,7 +176,7 @@ export default function MarketplacePage() {
 
                           <input
                             type="text"
-                            placeholder="Ketik untuk mencari produk..."
+                            placeholder="Cari kerajinan tradisional Indonesia..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setIsSearchFocused(true)}
@@ -329,7 +276,7 @@ export default function MarketplacePage() {
                   className="mb-2 text-center"
                 >
                   <p className="text-sm md:text-base text-gray-600">
-                    Menampilkan <span className="font-semibold text-[#a92e23]">{filteredItems.length}</span> produk budaya
+                    Menampilkan <span className="font-semibold text-[#a92e23]">{filteredItems.length}</span> kerajinan tradisional Indonesia
                   </p>
                 </motion.div>
 
@@ -357,9 +304,9 @@ export default function MarketplacePage() {
                 <div className="flex justify-center items-center mb-4 md:mb-6">
                   <Amphora className="w-16 h-16 md:w-20 md:h-20 text-[#a92e23]" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-2 md:mb-3">Belum Ada Produk</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-2 md:mb-3">Belum Ada Kerajinan</h3>
                 <p className="text-gray-600 mb-4 md:mb-6 max-w-md mx-auto text-sm md:text-base px-4 md:px-0">
-                  Produk yang Anda cari belum tersedia. Coba gunakan filter yang berbeda atau kembali lagi nanti.
+                  Kerajinan tradisional yang Anda cari belum tersedia. Coba gunakan kata kunci yang berbeda atau kembali lagi nanti.
                 </p>
                 <button
                   onClick={() => setSearchQuery('')}
@@ -372,7 +319,7 @@ export default function MarketplacePage() {
           </div>
 
           {/* Floating Action Buttons */}
-          <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 flex flex-col gap-2 md:gap-3 z-30">
+          <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 flex flex-col gap-2 md:gap-3 z-50">
             {/* Refresh Button */}
             <motion.button
               whileHover={{ scale: 1.1 }}

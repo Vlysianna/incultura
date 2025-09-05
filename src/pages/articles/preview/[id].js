@@ -63,7 +63,12 @@ export default function ArticlePreview() {
         )}
         <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: article.content }} />
         <div className="mt-8">
-          <Link href="/articles" className="text-[#a92d23] hover:underline">&larr; Kembali ke Daftar Artikel</Link>
+          <Link 
+            href={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('from') === 'admin' ? "/admin/articles" : "/articles"}
+            className="text-[#a92d23] hover:underline"
+          >
+            &larr; Kembali ke {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('from') === 'admin' ? 'Manajemen Artikel' : 'Daftar Artikel'}
+          </Link>
         </div>
       </div>
     </div>

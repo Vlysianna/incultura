@@ -1,7 +1,7 @@
 import { FooterSection } from '../../components/sections';
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -245,6 +245,12 @@ export default function AdminMerchandise(){
                 <Shield className="w-4 h-4" />
                 Admin: {session.user?.name || session.user?.email}
               </span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="ml-4 px-4 py-2 bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white rounded-lg font-medium hover:scale-105 transition-transform shadow"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>

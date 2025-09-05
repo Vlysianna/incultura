@@ -24,7 +24,28 @@ export default async function handler(req, res) {
       }
     })
 
-    res.json(activities)
+    // For article_view activities, fetch the article title
+    const articleViewActivities = activities.filter(a => a.type === 'article_view' && a.detail)
+    let articleTitles = {}
+    if (articleViewActivities.length > 0) {
+      const articleIds = articleViewActivities.map(a => parseInt(a.detail)).filter(id => !isNaN(id))
+      const articles = await prisma.article.findMany({
+        where: { id: { in: articleIds } },
+        select: { id: true, title: true }
+      })
+      articleTitles = Object.fromEntries(articles.map(a => [a.id, a.title]))
+    }
+
+    // Attach articleTitle to each activity if applicable
+    const activitiesWithTitles = activities.map(a => {
+      if (a.type === 'article_view' && a.detail) {
+        const articleId = parseInt(a.detail)
+        return { ...a, articleTitle: articleTitles[articleId] || null }
+      }
+      return a
+    })
+
+    res.json(activitiesWithTitles)
   } catch (error) {
     console.error('Admin activities error:', error)
     res.status(500).json({ error: 'Internal server error' })

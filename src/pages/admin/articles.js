@@ -1,7 +1,7 @@
 import { FooterSection } from '../../components/sections';
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -155,6 +155,12 @@ export default function AdminArticles(){
                 <Shield className="w-4 h-4" />
                 Admin: {session.user?.name || session.user?.email}
               </span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="ml-4 px-4 py-2 bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white rounded-lg font-medium hover:scale-105 transition-transform shadow"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -323,7 +329,7 @@ export default function AdminArticles(){
                             Reject
                           </button>
                           <Link
-                            href={`/articles/preview/${article.id}`}
+                            href={`/articles/preview/${article.id}?from=admin`}
                             className="flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
                             target="_blank"
                           >
@@ -332,10 +338,6 @@ export default function AdminArticles(){
                           </Link>
                         </>
                       )}
-                      <button className="flex items-center gap-2 px-4 py-2 border border-[#a92d23] text-[#a92d23] rounded-lg hover:bg-[#f3d099]/10 transition-colors font-medium">
-                        <Eye className="w-4 h-4" />
-                        View Full
-                      </button>
                     </div>
                   </div>
                 </div>

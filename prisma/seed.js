@@ -35,37 +35,47 @@ async function main() {
     create: { name: 'Demo User', email: 'demo@incultura.test', password: pw, coins: 120 }
   })
 
-  // Articles (short factual summaries; rewritten to avoid copyright issues)
+  // Articles (in-depth, researched content)
   const articles = [
     {
-      title: 'Batik Tulis: Warisan Budaya dari Jawa',
-      region: 'Jawa',
-      status: 'APPROVED',
-      content: '<p>Batik tulis adalah teknik menghias kain dengan malam panas memakai canting. Motif klasik seperti Parang dan Kawung memiliki makna filosofi tentang keselarasan, kekuatan, dan kebijaksanaan.</p>'
-    },
-    {
-      title: 'Angklung: Harmoni Bambu dari Sunda',
-      region: 'Jawa Barat',
-      status: 'APPROVED',
-      content: '<p>Angklung terbuat dari bambu dan menghasilkan nada ketika digetarkan. UNESCO menetapkannya sebagai Warisan Budaya Takbenda pada 2010.</p>'
-    },
-    {
-      title: 'Rendang: Kuliner Minangkabau Mendunia',
-      region: 'Sumatera Barat',
-      status: 'APPROVED',
-      content: '<p>Rendang dimasak perlahan dalam santan dan rempah hingga kering. Hidangan ini melambangkan kesabaran dan kehormatan dalam budaya Minang.</p>'
-    },
-    {
-      title: 'Wayang Kulit: Teater Bayangan Filosofis',
+      title: 'Candi Borobudur: Mandala Kosmis di Jantung Jawa',
       region: 'Jawa Tengah',
       status: 'APPROVED',
-      content: '<p>Wayang kulit memadukan sastra, musik gamelan, dan filosofi Jawa. Kisah diambil dari epos Mahabharata dan Ramayana yang diserap ke konteks lokal.</p>'
+      content: `
+        <p>Candi Borobudur, sebuah mahakarya arsitektur Buddha Mahayana, berdiri megah di Magelang, Jawa Tengah. Dibangun pada abad ke-9 oleh Dinasti Syailendra, candi ini bukan sekadar bangunan, melainkan representasi kosmologi Buddha dalam bentuk batu.</p>
+        <p>Strukturnya terbagi menjadi tiga tingkatan utama yang melambangkan alam spiritual: <strong>Kamadhatu</strong> (alam nafsu), <strong>Rupadhatu</strong> (alam rupa), dan <strong>Arupadhatu</strong> (alam tak berwujud). Pengunjung secara simbolis bergerak dari alam duniawi di dasar menuju pencerahan di puncak.</p>
+        <p>Dinding candi dihiasi oleh 2.672 panel relief yang membentang lebih dari 1.2 km. Relief di tingkat Rupadhatu menceritakan kisah-kisah Jataka (kehidupan Buddha sebelum lahir sebagai Pangeran Siddhartha) dan Lalitavistara (riwayat hidup Buddha Gautama). Puncaknya adalah Arupadhatu, di mana 72 stupa berlubang mengelilingi satu stupa induk yang masif, melambangkan nirwana.</p>
+      `
     },
     {
-      title: 'Ulos: Simbol Kehangatan Batak',
-      region: 'Sumatera Utara',
+      title: 'Tari Kecak: Drama Ramayana dalam Suara Manusia',
+      region: 'Bali',
+      status: 'APPROVED',
+      content: `
+        <p>Tari Kecak adalah salah satu pertunjukan seni paling ikonik dari Bali, yang unik karena tidak menggunakan iringan gamelan sama sekali. Seluruh musiknya dihasilkan secara akapela oleh paduan suara sekitar 50-70 pria yang duduk melingkar.</p>
+        <p>Mereka menyerukan "cak-cak-cak" secara ritmis, menciptakan atmosfer yang intens. Suara ini melambangkan pasukan kera (Vanara) yang dipimpin oleh Hanuman dalam membantu Rama melawan Rahwana. Di tengah lingkaran, para penari utama memerankan fragmen dari epos <strong>Ramayana</strong>, biasanya berpusat pada kisah penculikan Sita oleh Rahwana.</p>
+        <p>Meskipun berakar dari ritual Sanghyang (tarian untuk mengusir roh jahat), Kecak modern seperti yang kita kenal dikembangkan pada tahun 1930-an melalui kolaborasi antara seniman Bali I Wayan Limbak dan pelukis Jerman Walter Spies.</p>
+      `
+    },
+    {
+      title: 'Subak: Filosofi Tri Hita Karana dalam Irigasi Bali',
+      region: 'Bali',
+      status: 'APPROVED',
+      content: `
+        <p>Subak adalah sistem irigasi tradisional yang telah menghidupi persawahan terasering di Bali selama lebih dari seribu tahun. Namun, Subak lebih dari sekadar sistem pengairan; ia adalah manifestasi dari filosofi <strong>Tri Hita Karana</strong>.</p>
+        <p>Filosofi ini menekankan keharmonisan hubungan antara tiga elemen: <em>Parahyangan</em> (Tuhan), <em>Pawongan</em> (manusia), dan <em>Palemahan</em> (alam). Air tidak diperlakukan sebagai komoditas, melainkan anugerah yang dikelola secara adil melalui ritual di pura-pura air (Pura Ulun Danu) dan musyawarah antar petani.</p>
+        <p>Setiap Subak memiliki organisasinya sendiri, di mana petani bertemu untuk memutuskan jadwal tanam dan distribusi air. Karena integrasi unik antara praktik spiritual, sosial, dan ekologis ini, UNESCO mengakui Subak sebagai Situs Warisan Dunia pada tahun 2012.</p>
+      `
+    },
+    {
+      title: 'Rendang: Bukan Sekadar Makanan, Tapi Simbol Budaya',
+      region: 'Sumatera Barat',
       status: 'PENDING',
-      content: '<p>Ulos adalah kain tenun tangan yang dipakai pada upacara adat Batak sebagai simbol restu, persatuan, dan perlindungan.</p>'
+      content: `
+        <p>Rendang, yang sering dinobatkan sebagai salah satu hidangan terlezat di dunia, adalah masakan daging kaya rempah dari Minangkabau, Sumatera Barat. Proses memasaknya yang lambat (disebut <em>merandang</em>) membuat bumbu meresap sempurna dan berfungsi sebagai pengawet alami.</p>
+        <p>Dalam budaya Minang, Rendang memiliki makna filosofis. Empat bahan utamanya melambangkan masyarakat Minangkabau: <strong>dagiang</strong> (daging) melambangkan Niniak Mamak (pemimpin adat), <strong>karambia</strong> (kelapa) melambangkan Cadiak Pandai (kaum intelektual), <strong>lado</strong> (cabai) melambangkan Alim Ulama (pemimpin agama), dan <strong>pemasak</strong> (bumbu) melambangkan keseluruhan masyarakat.</p>
+        <p>Rendang secara tradisional disajikan dalam upacara adat dan acara-acara penting sebagai hidangan kehormatan.</p>
+      `
     }
   ]
 
@@ -73,18 +83,25 @@ async function main() {
     await prisma.article.create({ data: { ...a, authorId: a.status === 'PENDING' ? user.id : admin.id } })
   }
 
-  // Quiz questions with categories (budaya, makanan, musik, pakaian, general)
+  // Quiz questions directly related to the articles above
   const quizData = [
-    { question: 'Motif batik klasik yang bergelombang diagonal disebut?', options: ['Parang', 'Mega Mendung', 'Kawung', 'Lereng'], correctAnswer: 'Parang', category: 'budaya' },
-    { question: 'Alat musik bambu dari Jawa Barat yang digetarkan?', options: ['Sasando', 'Angklung', 'Talempong', 'Kolintang'], correctAnswer: 'Angklung', category: 'musik' },
-    { question: 'Makanan Minangkabau yang dimasak lama hingga kering?', options: ['Pempek', 'Gudeg', 'Rendang', 'Rawon'], correctAnswer: 'Rendang', category: 'makanan' },
-    { question: 'Kain tenun khas Batak disebut?', options: ['Songket', 'Lurik', 'Ulos', 'Endek'], correctAnswer: 'Ulos', category: 'pakaian' },
-    { question: 'Tokoh pewayangan Punakawan yang gemuk dan lucu?', options: ['Semar', 'Gareng', 'Petruk', 'Bagong'], correctAnswer: 'Bagong', category: 'budaya' },
-    { question: 'Alat musik petik dari Nusa Tenggara Timur berbahan daun lontar?', options: ['Sasando', 'Siter', 'Kecapi', 'Celempung'], correctAnswer: 'Sasando', category: 'musik' },
-    { question: 'Kuliner fermentasi kedelai dari Jawa Tengah?', options: ['Tempe', 'Tape', 'Lempok', 'Oncom'], correctAnswer: 'Tempe', category: 'makanan' },
-    { question: 'Pakaian adat pria Bali berupa kain lilit bawah?', options: ['Jarik', 'Kamen', 'Sarung', 'Songket'], correctAnswer: 'Kamen', category: 'pakaian' },
-    { question: 'Motif awan pada batik Cirebon dikenal sebagai?', options: ['Parang', 'Kawung', 'Mega Mendung', 'Truntum'], correctAnswer: 'Mega Mendung', category: 'budaya' },
-    { question: 'Musik tradisional Minangkabau menggunakan alat pukul logam kecil?', options: ['Talempong', 'Gamelan', 'Gong', 'Rebana'], correctAnswer: 'Talempong', category: 'musik' }
+    // Borobudur Quizzes
+    { question: 'Tiga tingkatan kosmologi yang digambarkan dalam struktur Candi Borobudur adalah...', options: ['Dunia Bawah, Tengah, Atas', 'Kamadhatu, Rupadhatu, Arupadhatu', 'Swarga, Madya, Naraka', 'Bhur, Bhuva, Swah'], correctAnswer: 'Kamadhatu, Rupadhatu, Arupadhatu', category: 'budaya' },
+    { question: 'Relief di Candi Borobudur yang menceritakan kehidupan Buddha sebelum lahir sebagai Pangeran Siddhartha dikenal sebagai?', options: ['Lalitavistara', 'Jataka', 'Avadana', 'Gandavyuha'], correctAnswer: 'Jataka', category: 'budaya' },
+    
+    // Kecak Quizzes
+    { question: 'Paduan suara "cak-cak" dalam Tari Kecak melambangkan pasukan...', options: ['Raksasa', 'Dewa', 'Kera (Vanara)', 'Manusia'], correctAnswer: 'Kera (Vanara)', category: 'seni' },
+    { question: 'Tari Kecak unik karena tidak menggunakan iringan musik dari...', options: ['Gamelan', 'Angklung', 'Manusia', 'Gendang'], correctAnswer: 'Gamelan', category: 'seni' },
+    { question: 'Kisah yang paling sering diangkat dalam pertunjukan Tari Kecak berasal dari epos?', options: ['Mahabharata', 'Ramayana', 'Sutasoma', 'Arjuna Wiwaha'], correctAnswer: 'Ramayana', category: 'seni' },
+
+    // Subak Quizzes
+    { question: 'Filosofi yang mendasari sistem irigasi Subak di Bali adalah...', options: ['Bhinneka Tunggal Ika', 'Tri Hita Karana', 'Hasta Brata', 'Catur Muka'], correctAnswer: 'Tri Hita Karana', category: 'budaya' },
+    { question: 'Lembaga sentral dalam pengelolaan air pada sistem Subak adalah...', options: ['Balai Desa', 'Pasar Adat', 'Pura Air', 'Banjar'], correctAnswer: 'Pura Air', category: 'budaya' },
+
+    // Rendang Quizzes
+    { question: 'Dalam filosofi Rendang, daging (dagiang) merupakan simbol dari?', options: ['Masyarakat', 'Kaum Intelektual', 'Pemimpin Adat (Niniak Mamak)', 'Ulama'], correctAnswer: 'Pemimpin Adat (Niniak Mamak)', category: 'makanan' },
+    { question: 'Proses memasak Rendang yang lambat dan lama disebut...', options: ['Menggulai', 'Menumis', 'Merandang', 'Membakar'], correctAnswer: 'Merandang', category: 'makanan' },
+    { question: 'Selain sebagai hidangan, fungsi asli dari bumbu Rendang yang dimasak hingga kering adalah sebagai...', options: ['Pewarna alami', 'Obat tradisional', 'Pengawet alami', 'Penambah aroma'], correctAnswer: 'Pengawet alami', category: 'makanan' }
   ]
   await prisma.quiz.createMany({ data: quizData.map(q => ({ ...q, options: JSON.stringify(q.options) })) })
 

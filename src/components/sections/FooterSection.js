@@ -16,10 +16,10 @@ export default function FooterSection() {
   }, []);
 
   return (
-    <footer className="relative z-10 bg-[#a92d23]  border-[#7a1f1a] overflow-hidden">
+  <footer className="relative z-0 bg-[#a92d23]  border-[#7a1f1a] overflow-hidden">
       {/* Wave Background Parallax dengan warna #f3d099 */}
       <div
-        className="wave absolute top-0 left-0 w-full h-[100px] opacity-70 rotate-180"
+        className="wave absolute top-0 left-0 w-full h-[100px] opacity-70 rotate-180 pointer-events-none z-0"
         style={{
           backgroundColor: "#f3d099",
           WebkitMaskImage: "url('/wave.png')",
@@ -33,7 +33,7 @@ export default function FooterSection() {
         }}
       ></div>
       <div
-        className="wave absolute top-0 left-0 w-full h-[100px] opacity-50 rotate-180"
+        className="wave absolute top-0 left-0 w-full h-[100px] opacity-50 rotate-180 pointer-events-none z-0"
         style={{
           backgroundColor: "#f3d099",
           WebkitMaskImage: "url('/wave.png')",
@@ -47,7 +47,7 @@ export default function FooterSection() {
         }}
       ></div>
       <div
-        className="wave absolute top-0 left-0 w-full h-[100px] opacity-30 rotate-180"
+        className="wave absolute top-0 left-0 w-full h-[100px] opacity-30 rotate-180 pointer-events-none z-0"
         style={{
           backgroundColor: "#f3d099",
           WebkitMaskImage: "url('/wave.png')",

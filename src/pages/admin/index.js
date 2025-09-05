@@ -1,7 +1,7 @@
 import { FooterSection } from '../../components/sections';
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -20,7 +20,9 @@ import {
   Settings,
   Shield,
   Sparkles,
-  Crown
+  Crown,
+  Coins,
+  CoinsIcon
 } from 'lucide-react'
 
 export default function AdminDashboard() {
@@ -171,6 +173,12 @@ export default function AdminDashboard() {
                 <Shield className="w-4 h-4" />
                 Admin: {session.user?.name || session.user?.email}
               </span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="ml-4 px-4 py-2 bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white rounded-lg font-medium hover:scale-105 transition-transform shadow"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -384,7 +392,14 @@ export default function AdminDashboard() {
                     
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-800 truncate">
-                        {activity.user?.name || activity.user?.email || 'User'} - {activity.type}
+                        {activity.user?.name || activity.user?.email || 'User'}
+                        {activity.type === 'article_view' && activity.articleTitle ? (
+                          <>
+                            {' '}melihat artikel <span className="font-semibold text-[#a92d23]">{activity.articleTitle}</span>
+                          </>
+                        ) : (
+                          <> - {activity.type}</>
+                        )}
                       </p>
                       <p className="text-xs text-gray-500">
                         {new Date(activity.createdAt).toLocaleString('id-ID')}
@@ -394,7 +409,7 @@ export default function AdminDashboard() {
                     <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                       activity.coins > 0 ? 'bg-[#f3d099]/20 text-[#a92d23]' : 'bg-gray-100 text-gray-600'
                     }`}>
-                      <DollarSign className="w-3 h-3" />
+                      <CoinsIcon className="w-3 h-3" />
                       {activity.coins > 0 ? `+${activity.coins}` : activity.coins}
                     </div>
                   </div>

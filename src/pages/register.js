@@ -14,6 +14,7 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const router = useRouter();
   const [animationPhase, setAnimationPhase] = useState('initial');
   const [showFloatingElements, setShowFloatingElements] = useState(false);
@@ -232,6 +233,7 @@ const RegisterPage = () => {
           <form onSubmit={async (e) => {
             e.preventDefault();
             setError(null);
+            setSuccess(null);
             if (!name || !email || !password) return setError('Semua field harus diisi');
             if (password !== confirmPassword) return setError('Kata sandi dan konfirmasi tidak sama');
             setLoading(true);
@@ -244,14 +246,11 @@ const RegisterPage = () => {
               const data = await res.json();
               setLoading(false);
               if (!res.ok) return setError(data.error || 'Gagal mendaftar');
-              // success -> auto sign-in then redirect to home
-              const signin = await signIn('credentials', { redirect: false, email, password });
-              if (signin?.error) {
-                // fallback: go to login page
+              
+              setSuccess('Registrasi berhasil! Anda akan diarahkan ke halaman login...');
+              setTimeout(() => {
                 router.push('/login');
-                return;
-              }
-              router.push('/');
+              }, 2000);
             } catch (err) {
               setLoading(false);
               setError('Terjadi kesalahan jaringan');
@@ -317,6 +316,10 @@ const RegisterPage = () => {
 
             {error && (
               <div className="text-sm text-red-600">{error}</div>
+            )}
+
+            {success && (
+              <div className="text-sm text-green-600">{success}</div>
             )}
 
             <div className="pt-2">

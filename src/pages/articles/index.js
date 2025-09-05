@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { FileText, Plus, Search, Eye, Calendar, User, MapPin, Sparkles } from 'lucide-react'
-import Nav from '../components/Nav'
+import Header from '../../components/Header'
 import { FooterSection } from '../../components/sections'
 import dynamic from 'next/dynamic'
 const ArticleForm = dynamic(() => import('../../components/articles/ArticleForm'), { ssr: false })
@@ -86,7 +86,7 @@ export default function Articles() {
         <Sparkles className="w-6 h-6 text-[#a92d23]" />
       </div>
 
-    <Nav />
+    <Header />
 
       {/* Main Content */}
       <main className="pt-28 pb-16 px-6 max-w-6xl mx-auto relative z-10">

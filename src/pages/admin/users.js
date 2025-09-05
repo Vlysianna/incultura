@@ -1,7 +1,7 @@
 import { FooterSection } from '../../components/sections';
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -18,8 +18,127 @@ import {
   UserCheck,
   UserX,
   Crown,
-  Sparkles
+  Sparkles,
+  PlusCircle,
+  Edit,
+  Trash2
 } from 'lucide-react'
+
+function UserModal({ isOpen, onClose, onSubmit, user, setUser }) {
+  if (!isOpen) return null
+
+  const isEditMode = !!user?.id
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSubmit(user)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{isEditMode ? 'Edit User' : 'Create User'}</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input 
+              type="text"
+              required
+              value={user?.name || ''}
+              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a92d23] outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input 
+              type="email"
+              required
+              value={user?.email || ''}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a92d23] outline-none"
+            />
+          </div>
+          {!isEditMode && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input 
+                type="password"
+                required
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a92d23] outline-none"
+              />
+            </div>
+          )}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Coins</label>
+              <input 
+                type="number"
+                value={user?.coins || 0}
+                onChange={(e) => setUser({ ...user, coins: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a92d23] outline-none"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select
+                value={user?.isAdmin ? 'admin' : 'user'}
+                onChange={(e) => setUser({ ...user, isAdmin: e.target.value === 'admin' })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a92d23] outline-none bg-white"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-4 pt-4">
+            <button type="button" onClick={onClose} className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">Cancel</button>
+            <button type="submit" className="px-6 py-2 text-white bg-gradient-to-r from-[#a92d23] to-[#f3d099] rounded-lg hover:scale-105 transition-transform">
+              {isEditMode ? 'Save Changes' : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  )
+}
+
+function DeleteConfirmationModal({ isOpen, onClose, onConfirm, userName }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8"
+      >
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Trash2 className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Delete User</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to delete <span className="font-semibold">{userName}</span>? This action cannot be undone.
+          </p>
+          <div className="flex justify-center gap-4">
+            <button onClick={onClose} className="px-8 py-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button onClick={onConfirm} className="px-8 py-3 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+              Delete
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function AdminUsers(){
   const { data: session } = useSession()
@@ -27,17 +146,88 @@ export default function AdminUsers(){
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingUser, setEditingUser] = useState(null)
+  const [deletingUser, setDeletingUser] = useState(null)
+
+  const fetchUsers = () => {
+    fetch('/api/admin/users')
+      .then(r => r.ok ? r.json() : [])
+      .then(setUsers)
+      .finally(() => setLoading(false))
+  }
   
   useEffect(() => { 
     if (session?.user) {
-      fetch('/api/admin/users')
-        .then(r => r.ok ? r.json() : [])
-        .then(setUsers)
-        .finally(() => setLoading(false))
+      fetchUsers()
     } else {
       setLoading(false)
     }
   }, [session])
+
+  const handleOpenModal = (user = null) => {
+    setEditingUser(user ? { ...user } : {});
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingUser(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSubmitUser = async (userData) => {
+    const isEditMode = !!userData.id;
+    const url = isEditMode ? `/api/admin/users/${userData.id}` : '/api/admin/users/create';
+    const method = isEditMode ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (res.ok) {
+        fetchUsers(); // Refresh user list
+        handleCloseModal();
+      } else {
+        const errorData = await res.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to save user:', error);
+      alert('An unexpected error occurred.');
+    }
+  };
+
+  const openDeleteConfirmation = (user) => {
+    setDeletingUser(user);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setDeletingUser(null);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deletingUser) return;
+
+    try {
+      const res = await fetch(`/api/admin/users/${deletingUser.id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        fetchUsers(); // Refresh user list
+        closeDeleteConfirmation();
+      } else {
+        const errorData = await res.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      alert('An unexpected error occurred.');
+    }
+  };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -140,6 +330,12 @@ export default function AdminUsers(){
                 <Shield className="w-4 h-4" />
                 Admin: {session.user?.name || session.user?.email}
               </span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="ml-4 px-4 py-2 bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white rounded-lg font-medium hover:scale-105 transition-transform shadow"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -173,6 +369,13 @@ export default function AdminUsers(){
             </div>
 
             <div className="flex items-center gap-4">
+              <button 
+                onClick={() => handleOpenModal()}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#a92d23] to-[#f3d099] text-white px-4 py-3 rounded-xl hover:scale-105 transition-all duration-300 font-medium shadow-lg"
+              >
+                <PlusCircle className="w-5 h-5" />
+                Create User
+              </button>
               <div className="text-center">
                 <div className="text-2xl font-bold text-[#a92d23]">{users.filter(u => !u.isAdmin).length}</div>
                 <div className="text-sm text-gray-500">Regular Users</div>
@@ -284,7 +487,7 @@ export default function AdminUsers(){
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-1 text-sm text-gray-900">
                           <Activity className="w-4 h-4 text-gray-400" />
-                          {user.activities?.length || 0} activities
+                          {user.activityCount || 0} activities
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -295,8 +498,19 @@ export default function AdminUsers(){
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <button className="p-2 text-gray-400 hover:text-[#a92d23] transition-colors">
-                            <MoreVertical className="w-4 h-4" />
+                          <button 
+                            onClick={() => handleOpenModal(user)}
+                            className="p-2 text-gray-400 hover:text-[#a92d23] transition-colors"
+                            title="Edit User"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => openDeleteConfirmation(user)}
+                            className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                            title="Delete User"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -343,6 +557,21 @@ export default function AdminUsers(){
           </div>
         </motion.div>
       </main>
+
+      <UserModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitUser}
+        user={editingUser}
+        setUser={setEditingUser}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!deletingUser}
+        onClose={closeDeleteConfirmation}
+        onConfirm={handleDeleteUser}
+        userName={deletingUser?.name}
+      />
 
   {/* Footer */}
   <FooterSection />
